@@ -1,3 +1,4 @@
+-- See LICENSE file for cc0 license details
 with Ada.Directories;
 with Ada.Text_IO;
 

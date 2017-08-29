@@ -1,3 +1,4 @@
+-- See LICENSE file for cc0 license details
 with Ada.Text_IO;
 With SrvCtl;
 
