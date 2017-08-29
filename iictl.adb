@@ -4,7 +4,10 @@ With SrvCtl;
 procedure Iictl is
 begin
 	Ada.Text_IO.Put_Line ("Hello, iictl!");
-	SrvCtl.List_Servers;
+
+	loop
+		SrvCtl.List_Servers;
+	end loop;
 
 	-- Outline/Sketch of program
 		-- Loop
