@@ -1,10 +1,22 @@
-with Ada.Text_IO;
 with Ada.Directories;
+with Ada.Text_IO;
 
 package body SrvCtl is
+	package AD renames Ada.Directories;
+	Package ATIO renames Ada.Text_IO;
+
 	procedure List_Servers is
+		Search : AD.Search_Type;
+		Dir_Ent : AD.Directory_Entry_Type;
 	begin
-		Ada.Text_IO.Put_Line ("Listing servers");
-		Ada.Text_IO.Put_Line (Ada.Directories.Current_Directory);
+		ATIO.Put_Line ("Listing servers");
+		ATIO.Put_Line (AD.Current_Directory);
+
+		AD.Start_Search (Search, ".", "");
+		while AD.More_Entries (Search) loop
+			AD.Get_Next_Entry (Search, Dir_Ent);
+			ATIO.Put_Line (AD.Simple_Name(Dir_Ent));
+		end loop;
+		--TODO stop search?
 	end List_Servers;
 end SrvCtl;
