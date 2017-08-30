@@ -10,14 +10,20 @@ package body SrvCtl is
 		Search : AD.Search_Type;
 		Dir_Ent : AD.Directory_Entry_Type;
 	begin
-		ATIO.Put_Line ("Listing servers");
-		ATIO.Put_Line (AD.Current_Directory);
-
 		AD.Start_Search (Search, ".", "");
+		-- TODO don't assume "." is correct dir?
+
 		while AD.More_Entries (Search) loop
 			AD.Get_Next_Entry (Search, Dir_Ent);
-			ATIO.Put_Line (AD.Simple_Name(Dir_Ent));
+			Maintain_Connection (AD.Simple_Name(Dir_Ent));
 		end loop;
-		--TODO stop search?
+
+		AD.End_Search (Search);
 	end Reconnect_Servers;
+
+	procedure Maintain_Connection (Name : in String) is
+		-- TODO get Dir_Ent as input?
+	begin
+		ATIO.Put_Line ("Mainting " & Name);
+	end Maintain_Connection;
 end SrvCtl;
