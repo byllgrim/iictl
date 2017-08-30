@@ -1,10 +1,14 @@
 -- See LICENSE file for cc0 license details
 with Ada.Directories;
 with Ada.Text_IO;
+with Ada.Sequential_IO;
+with Ada.Strings.Unbounded;
 
 package body SrvCtl is
 	package AD renames Ada.Directories;
 	Package ATIO renames Ada.Text_IO;
+	package ASU renames Ada.Strings.Unbounded;
+	-- TODO is this renaming a good idea?
 
 	procedure Reconnect_Servers is
 		Search : AD.Search_Type;
@@ -15,6 +19,7 @@ package body SrvCtl is
 
 		while AD.More_Entries (Search) loop
 			AD.Get_Next_Entry (Search, Dir_Ent);
+			-- TODO check directory or file
 			Maintain_Connection (AD.Simple_Name(Dir_Ent));
 		end loop;
 
@@ -32,7 +37,16 @@ package body SrvCtl is
 	end Maintain_Connection;
 
 	function Is_Up (Name : in String) return Boolean is
+		package Irc_IO is new Ada.Sequential_IO (String);
+		File : Irc_IO.File_Type;
+		Relative_Path : ASU.Unbounded_String; -- TODO In_File
 	begin
+		-- TODO Is_Open?
+		Relative_Path := ASU.To_Unbounded_String (Name);
+		ASU.Append (Relative_Path, "/in");
+
+		ATIO.Put_Line ("Chec " & ASU.To_String (Relative_Path));
+
 		return True; -- TODO open file, check fifo?, check ENXIO
 	end Is_Up;
 end SrvCtl;
