@@ -4,19 +4,12 @@ With SrvCtl;
 
 procedure Iictl is
 begin
-	Ada.Text_IO.Put_Line ("Hello, iictl!");
+	-- TODO output procedure information when -v?
 
 	loop
 		SrvCtl.Reconnect_Servers;
-		-- Scan for servers
-		-- Check server disconnection
-		-- Reconnect (instantiate ii) disconnected srvs
-
-		-- Scan for disconnected channels
-		-- Reconnect (join) disconnected chs
-		-- Listen for server exit command
-		-- Delete server dir if exit command
-		-- Listen for channel exit command
-		-- Delete channel dir if exit command
+		-- TODO ChCtl.Rejoin_Channels;
+		-- TODO SrvCtl.Detect_Quits;
+		-- TODO ChCtl.Detect_Parts;
 	end loop;
 end Iictl;
