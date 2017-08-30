@@ -7,18 +7,16 @@ begin
 	Ada.Text_IO.Put_Line ("Hello, iictl!");
 
 	loop
-		SrvCtl.List_Servers;
-	end loop;
+		SrvCtl.Reconnect_Servers;
+		-- Scan for servers
+		-- Check server disconnection
+		-- Reconnect (instantiate ii) disconnected srvs
 
-	-- Outline/Sketch of program
-		-- Loop
-		-- Scan for disconnected servers
-		-- Reconnect (instantiate ii) if any
 		-- Scan for disconnected channels
-		-- Reconnect (join) if any
+		-- Reconnect (join) disconnected chs
 		-- Listen for server exit command
 		-- Delete server dir if exit command
 		-- Listen for channel exit command
 		-- Delete channel dir if exit command
-		-- Goto Loop
+	end loop;
 end Iictl;

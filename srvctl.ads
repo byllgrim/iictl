@@ -1,3 +1,3 @@
 package SrvCtl is
-	procedure List_Servers;
+	procedure Reconnect_Servers;
 end SrvCtl;

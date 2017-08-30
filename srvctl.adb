@@ -6,7 +6,7 @@ package body SrvCtl is
 	package AD renames Ada.Directories;
 	Package ATIO renames Ada.Text_IO;
 
-	procedure List_Servers is
+	procedure Reconnect_Servers is
 		Search : AD.Search_Type;
 		Dir_Ent : AD.Directory_Entry_Type;
 	begin
@@ -19,5 +19,5 @@ package body SrvCtl is
 			ATIO.Put_Line (AD.Simple_Name(Dir_Ent));
 		end loop;
 		--TODO stop search?
-	end List_Servers;
+	end Reconnect_Servers;
 end SrvCtl;
