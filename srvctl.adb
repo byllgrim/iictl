@@ -24,6 +24,15 @@ package body SrvCtl is
 	procedure Maintain_Connection (Name : in String) is
 		-- TODO get Dir_Ent as input?
 	begin
-		ATIO.Put_Line ("Mainting " & Name);
+		if not Is_Up (Name) then
+			ATIO.Put_Line ("Fifo not up");
+			-- TODO Spawn_Client (Name);
+		end if;
+		ATIO.Put_Line ("Mainting " & Name); -- TODO remove
 	end Maintain_Connection;
+
+	function Is_Up (Name : in String) return Boolean is
+	begin
+		return True; -- TODO open file, check fifo?, check ENXIO
+	end Is_Up;
 end SrvCtl;
