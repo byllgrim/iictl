@@ -33,9 +33,9 @@ package body SrvCtl is
 
         --Kind := AD.Kind (Dir_Ent);
         --if AD.File_Kind'Pos (Kind)
-        --   = AD.File_Kind'Pos (AD.Special_File) then
-        --    --TODO define = operator
-        --    --TODO move to Maintain_Connection
+        --  = AD.File_Kind'Pos (AD.Special_File) then
+        --    -- TODO define = operator
+        --    -- TODO move to Maintain_Connection
         --    Maintain_Connection (AD.Simple_Name(Dir_Ent));
         --end if;
 
@@ -43,7 +43,7 @@ package body SrvCtl is
             ATIO.Put_Line ("Spawning client for " & Name);
             -- TODO Spawn_Client (Name);
         else
-            ATIO.Put_Line (Name & " is running"); --TODO remove
+            ATIO.Put_Line (Name & " is running"); -- TODO remove
         end if;
     end Maintain_Connection;
 
@@ -57,25 +57,25 @@ package body SrvCtl is
 
         ATIO.Put_Line ("Opening " & ASU.To_String (Path));
         ATIO.Open (In_File, ATIO.Out_File, ASU.To_String (Path), "");
-        --TODO nonblocking
-        --TODO catch exception. Is_Open()?
-        --TODO close file
+        -- TODO nonblocking
+        -- TODO catch exception. Is_Open()?
+        -- TODO close file
 
         return False; -- TODO open file, check fifo?, check ENXIO
     end Is_Up;
 
     function Is_Srv_Dir (Dir_Ent : AD.Directory_Entry_Type) return Boolean is
-        Kind : AD.File_Kind := AD.Kind (Dir_Ent); --TODO use without variable
+        Kind : AD.File_Kind := AD.Kind (Dir_Ent); -- TODO use without variable
         Name : String := AD.Simple_Name (Dir_Ent);
     begin
 
         if AD.File_Kind'Pos (Kind) /= AD.File_Kind'Pos (AD.Directory) then
-            --TODO define = operator
-            --TODO move to Maintain_Connection?
+            -- TODO define = operator
+            -- TODO move to Maintain_Connection?
             return False;
         elsif Name(Name'First) = '.' then
             return False;
-        --TODO else if no */in */out
+        -- TODO else if no */in */out
         else
             return True;
         end if;
