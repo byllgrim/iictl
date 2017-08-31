@@ -49,15 +49,20 @@ package body SrvCtl is
     end Maintain_Connection;
 
     function Is_Up (Name : in String) return Boolean is
-        package Irc_IO is new Ada.Sequential_IO (String);
-        File : Irc_IO.File_Type;
-        Relative_Path : ASU.Unbounded_String; -- TODO In_File
+        package Irc_IO is new Ada.Sequential_IO (String); --TODO
+
+        In_File : Irc_IO.File_Type;
+        Path : ASU.Unbounded_String; -- TODO In_File
     begin
         -- TODO Is_Open?
-        Relative_Path := ASU.To_Unbounded_String (Name);
-        ASU.Append (Relative_Path, "/in");
+        Path := ASU.To_Unbounded_String (Name);
+        ASU.Append (Path, "/in");
 
-        ATIO.Put_Line ("Isup? " & ASU.To_String (Relative_Path));
+        ATIO.Put_Line ("Opening " & ASU.To_String (Path));
+        Irc_IO.Open (In_File, Irc_IO.Out_File, ASU.To_String (Path), "");
+        --TODO nonblocking
+        --TODO catch exception. Is_Open()?
+        --TODO close file
 
         return False; -- TODO open file, check fifo?, check ENXIO
     end Is_Up;
