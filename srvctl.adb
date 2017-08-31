@@ -19,15 +19,15 @@ package body SrvCtl is
             AD.Get_Next_Entry (Search, Dir_Ent);
 
             if Is_Srv_Dir (Dir_Ent) then
-                Maintain_Connection (AD.Simple_Name(Dir_Ent));
+                Maintain_Connection (Dir_Ent);
             end if;
         end loop;
 
         AD.End_Search (Search);
     end Reconnect_Servers;
 
-    procedure Maintain_Connection (Name : in String) is
-        -- TODO get Dir_Ent as input?
+    procedure Maintain_Connection (Dir_Ent : in AD.Directory_Entry_Type) is
+        Srv_Path : String := AD.Full_Name (Dir_Ent); -- TODO just Short_Name?
     begin
 
         --Kind := AD.Kind (Dir_Ent);
@@ -35,14 +35,14 @@ package body SrvCtl is
         --  = AD.File_Kind'Pos (AD.Special_File) then
         --    -- TODO define = operator
         --    -- TODO move to Maintain_Connection
-        --    Maintain_Connection (AD.Simple_Name(Dir_Ent));
+        --    Maintain_Connection (AD.Simple_Name (Dir_Ent));
         --end if;
 
-        if not Is_Up (Name) then
-            ATIO.Put_Line ("Spawning client for " & Name);
+        if not Is_Up (Srv_Path) then
+            ATIO.Put_Line ("Spawning client for " & Srv_Path);
             -- TODO Spawn_Client (Name);
         else
-            ATIO.Put_Line (Name & " is running"); -- TODO remove
+            ATIO.Put_Line (Srv_Path & " is running"); -- TODO remove
         end if;
     end Maintain_Connection;
 
@@ -50,6 +50,8 @@ package body SrvCtl is
         In_File : ATIO.File_Type;
         Path : ASU.Unbounded_String; -- TODO In_File
     begin
+        -- TODO take server record as input
+
         -- TODO Is_Open?
         Path := ASU.To_Unbounded_String (Name);
         ASU.Append (Path, "/in");

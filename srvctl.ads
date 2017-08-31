@@ -1,9 +1,10 @@
 with Ada.Directories;
 
 package SrvCtl is
-    procedure Reconnect_Servers (Irc_Dir : String);
-    procedure Maintain_Connection (Name : in String);
+    procedure Reconnect_Servers (Irc_Dir : in String);
+    procedure Maintain_Connection
+        (Dir_Ent : in Ada.Directories.Directory_Entry_Type);
     function Is_Up (Name : in String) return Boolean;
     function Is_Srv_Dir
-        (Dir_Ent : Ada.Directories.Directory_Entry_Type) return Boolean;
+        (Dir_Ent : in Ada.Directories.Directory_Entry_Type) return Boolean;
 end SrvCtl;
