@@ -1,7 +1,6 @@
 -- See LICENSE file for cc0 license details
 with Ada.Directories;
 with Ada.Text_IO;
-with Ada.Sequential_IO;
 with Ada.Strings.Unbounded;
 
 package body SrvCtl is
@@ -49,9 +48,7 @@ package body SrvCtl is
     end Maintain_Connection;
 
     function Is_Up (Name : in String) return Boolean is
-        package Irc_IO is new Ada.Sequential_IO (String); --TODO
-
-        In_File : Irc_IO.File_Type;
+        In_File : ATIO.File_Type;
         Path : ASU.Unbounded_String; -- TODO In_File
     begin
         -- TODO Is_Open?
@@ -59,7 +56,7 @@ package body SrvCtl is
         ASU.Append (Path, "/in");
 
         ATIO.Put_Line ("Opening " & ASU.To_String (Path));
-        Irc_IO.Open (In_File, Irc_IO.Out_File, ASU.To_String (Path), "");
+        ATIO.Open (In_File, ATIO.Out_File, ASU.To_String (Path), "");
         --TODO nonblocking
         --TODO catch exception. Is_Open()?
         --TODO close file
