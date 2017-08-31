@@ -9,12 +9,11 @@ package body SrvCtl is
     package ASU renames Ada.Strings.Unbounded;
     -- TODO is this renaming a good idea?
 
-    procedure Reconnect_Servers is
+    procedure Reconnect_Servers (Irc_Dir : String) is
         Search : AD.Search_Type;
         Dir_Ent : AD.Directory_Entry_Type;
     begin
-        AD.Start_Search (Search, ".", "");
-        -- TODO don't assume "." is correct dir?
+        AD.Start_Search (Search, Irc_Dir, "");
 
         while AD.More_Entries (Search) loop
             AD.Get_Next_Entry (Search, Dir_Ent);
