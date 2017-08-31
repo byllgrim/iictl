@@ -46,18 +46,18 @@ package body SrvCtl is
         end if;
     end Maintain_Connection;
 
-    function Is_Up (Name : in String) return Boolean is
-        In_File : ATIO.File_Type;
-        Path : ASU.Unbounded_String; -- TODO In_File
+    function Is_Up (Srv_Path : in String) return Boolean is
+        In_File : ATIO.File_Type; -- TODO this name is confusing
+        In_Path : ASU.Unbounded_String;
     begin
         -- TODO take server record as input
 
         -- TODO Is_Open?
-        Path := ASU.To_Unbounded_String (Name);
-        ASU.Append (Path, "/in");
+        In_Path := ASU.To_Unbounded_String (Srv_Path);
+        ASU.Append (In_Path, "/in");
 
-        ATIO.Put_Line ("Opening " & ASU.To_String (Path));
-        ATIO.Open (In_File, ATIO.Out_File, ASU.To_String (Path), "");
+        ATIO.Put_Line ("Opening " & ASU.To_String (In_Path));
+        ATIO.Open (In_File, ATIO.Out_File, ASU.To_String (In_Path), "");
         -- TODO nonblocking
         -- TODO catch exception. Is_Open()?
         -- TODO close file
