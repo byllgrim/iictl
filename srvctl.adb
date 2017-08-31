@@ -13,7 +13,6 @@ package body SrvCtl is
     procedure Reconnect_Servers is
         Search : AD.Search_Type;
         Dir_Ent : AD.Directory_Entry_Type;
-        Kind : AD.File_Kind;
     begin
         AD.Start_Search (Search, ".", "");
         -- TODO don't assume "." is correct dir?
@@ -21,12 +20,7 @@ package body SrvCtl is
         while AD.More_Entries (Search) loop
             AD.Get_Next_Entry (Search, Dir_Ent);
 
-            -- TODO check directory or file
-            Kind := AD.Kind (Dir_Ent);
-            if AD.File_Kind'Pos (Kind)
-               = AD.File_Kind'Pos (AD.Directory) then
-                --TODO define = operator
-                --TODO move to Maintain_Connection
+            if Is_Srv_Dir (Dir_Ent) then
                 Maintain_Connection (AD.Simple_Name(Dir_Ent));
             end if;
         end loop;
@@ -70,4 +64,19 @@ package body SrvCtl is
 
         return True; -- TODO open file, check fifo?, check ENXIO
     end Is_Up;
+
+    function Is_Srv_Dir (Dir_Ent : AD.Directory_Entry_Type) return Boolean is
+        Kind : AD.File_Kind;
+    begin
+        Kind := AD.Kind (Dir_Ent); --TODO use without variable
+        if AD.File_Kind'Pos (Kind) /= AD.File_Kind'Pos (AD.Directory) then
+            --TODO define = operator
+            --TODO move to Maintain_Connection?
+            return False;
+        --TODO else if ".." etc
+        --TODO else if no */in */out
+        else
+            return True;
+        end if;
+    end Is_Srv_Dir;
 end SrvCtl;
