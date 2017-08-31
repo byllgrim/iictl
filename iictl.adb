@@ -4,12 +4,12 @@ With SrvCtl;
 
 procedure Iictl is
 begin
-	-- TODO output procedure information when -v?
+    -- TODO output procedure information when -v?
 
-	loop
-		SrvCtl.Reconnect_Servers;
-		-- TODO ChCtl.Rejoin_Channels;
-		-- TODO SrvCtl.Detect_Quits;
-		-- TODO ChCtl.Detect_Parts;
-	end loop;
+    loop
+        SrvCtl.Reconnect_Servers;
+        -- TODO ChCtl.Rejoin_Channels;
+        -- TODO SrvCtl.Detect_Quits;
+        -- TODO ChCtl.Detect_Parts;
+    end loop;
 end Iictl;
