@@ -66,15 +66,16 @@ package body SrvCtl is
     end Is_Up;
 
     function Is_Srv_Dir (Dir_Ent : AD.Directory_Entry_Type) return Boolean is
-        Kind : AD.File_Kind := AD.Kind (Dir_Ent); -- TODO use without variable
+        use type AD.File_Kind;
+
         Name : String := AD.Simple_Name (Dir_Ent);
     begin
 
-        if AD.File_Kind'Pos (Kind) /= AD.File_Kind'Pos (AD.Directory) then
-            -- TODO define = operator
+        if AD.Kind (Dir_Ent) /= AD.Directory then
             -- TODO move to Maintain_Connection?
             return False;
-        elsif Name(Name'First) = '.' then
+        elsif Name (Name'First) = '.' then
+            -- TODO index by number?
             return False;
         -- TODO else if no */in */out
         else
