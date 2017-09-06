@@ -2,12 +2,16 @@
 with Ada.Directories;
 with Ada.Text_IO;
 with Ada.Strings.Unbounded;
+with Interfaces.C;
 
 package body SrvCtl is
     package AD renames Ada.Directories;
     Package ATIO renames Ada.Text_IO;
     package ASU renames Ada.Strings.Unbounded;
+    package IC renames Interfaces.C;
     -- TODO is this renaming a good idea?
+
+    --TODO pragma Import (C, Is_Up, "is_up");
 
     procedure Reconnect_Servers (Irc_Dir : String) is
         Search : AD.Search_Type;
@@ -38,32 +42,13 @@ package body SrvCtl is
         --    Maintain_Connection (AD.Simple_Name (Dir_Ent));
         --end if;
 
-        if not Is_Up (Srv_Path) then
+        if Is_Up (IC.To_C (Srv_Path)) /= 1 then
             ATIO.Put_Line ("Spawning client for " & Srv_Path);
             -- TODO Spawn_Client (Name);
         else
             ATIO.Put_Line (Srv_Path & " is running"); -- TODO remove
         end if;
     end Maintain_Connection;
-
-    function Is_Up (Srv_Path : in String) return Boolean is
-        In_File : ATIO.File_Type; -- TODO this name is confusing
-        In_Path : ASU.Unbounded_String;
-    begin
-        -- TODO take server record as input
-
-        -- TODO Is_Open?
-        In_Path := ASU.To_Unbounded_String (Srv_Path);
-        ASU.Append (In_Path, "/in");
-
-        ATIO.Put_Line ("Opening " & ASU.To_String (In_Path));
-        ATIO.Open (In_File, ATIO.Out_File, ASU.To_String (In_Path), "");
-        -- TODO nonblocking
-        -- TODO catch exception. Is_Open()?
-        -- TODO close file
-
-        return False; -- TODO open file, check fifo?, check ENXIO
-    end Is_Up;
 
     function Is_Srv_Dir (Dir_Ent : AD.Directory_Entry_Type) return Boolean is
         use type AD.File_Kind;
