@@ -1,11 +1,5 @@
 #include <stdio.h>
 
-void
-hello_c(void)
-{
-	puts("Hello, Ada!");
-}
-
 int
 is_up(char *srv_path)
 {
