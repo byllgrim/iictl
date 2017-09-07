@@ -32,5 +32,5 @@ is_up(char *srv_path)
 	}
 
 	close (fd);
-	return ret;
+	return ret; /* TODO return Boolean */
 }
