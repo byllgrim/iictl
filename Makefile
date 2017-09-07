@@ -1,10 +1,13 @@
 PREFIX = /usr/local
+FLORIST_SRC = /usr/share/ada/adainclude/florist
+FLORIST_LIB = /usr/lib/i386-linux-gnu/
+LARGS = -largs-lflorist
 
-all: isup.o
-	gnatmake iictl.adb -largs isup.o
+#TODO elaborate makefile vs using gnatmake
 
-.c.o:
-	${CC} -c $<
+all:
+	#gnatmake -I${FLORIST_SRC} -a0${FLORIST_LIB} iictl.adb ${LARGS}
+	gnatmake -aI/usr/share/ada/adainclude/florist -aO/usr/lib/ada/adalib/florist iictl.adb -largs -lflorist
 
 install: all
 	mkdir -p ${DESTDIR}${PREFIX}/bin
