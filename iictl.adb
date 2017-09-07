@@ -8,6 +8,8 @@ procedure Iictl is
 begin
     -- TODO output procedure information when -v?
 
+    -- TODO set file offset to end of channel outs?
+
     loop
         SrvCtl.Reconnect_Servers (Irc_Dir);
         -- TODO ChCtl.Rejoin_Channels;
