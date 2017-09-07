@@ -2,15 +2,15 @@
 Controlling ii - Manage server/channel connections.
 
 It is written in **Ada** because I wanted to learn it.
-NB! There's a function temporarily written in C.
+Except one function temporarily written in C.
 
 ## Dependencies
 Ada (TODO which version?) compiler e.g. gnat.
 
-See above NB.
+C compiler (TODO C89 and posix dependencies).
 
 ## Build and install
-Build with `make` or `gnatmake iictl.adb`.
+Build with `make`.
 
 Install with `make install`, maybe prepended with `sudo`.
 
