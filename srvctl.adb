@@ -1,12 +1,13 @@
 -- See LICENSE file for cc0 license details
 with Ada.Directories;
+with Ada.Exceptions; use Ada.Exceptions; -- TODO remove
 with Ada.Text_IO;
-with Ada.Strings.Unbounded;
-with POSIX.IO;
+with Ada.Strings.Unbounded; -- TODO needed?
+with Posix.IO;
 
 package body SrvCtl is
     package AD renames Ada.Directories;
-    Package ATIO renames Ada.Text_IO;
+    package ATIO renames Ada.Text_IO;
     package ASU renames Ada.Strings.Unbounded;
     package PIO renames POSIX.IO;
 
@@ -40,10 +41,31 @@ package body SrvCtl is
     end Maintain_Connection;
 
     function Is_Up (Srv_Path : String) Return Boolean is
+        -- TODO take POSIX_String?
+        use type Posix.Error_Code;
+
+        In_Path : Posix.POSIX_String
+                := Posix.To_POSIX_String (Srv_Path & "/in");
+        Fd : PIO.File_Descriptor;
     begin
+        -- It's up if it's possible to open wronly without error
+
         -- TODO rename Is_Fifo_Up or something
-        -- TODO PIO.Open (
-        return False;
+
+        -- TODO Is_Pathname ()?
+
+        Fd := PIO.Open (In_Path, PIO.Write_Only, PIO.Non_Blocking);
+
+        -- TODO Close
+        return True;
+    exception
+        when Error : Posix.POSIX_ERROR =>
+            if Posix.Get_Error_Code = Posix.ENXIO then
+                return False; -- Fifo is down
+            else
+                raise Posix.POSIX_ERROR with Exception_Message (Error);
+                -- TODO better solution
+            end if;
     end Is_Up;
 
     function Is_Srv_Dir (Dir_Ent : AD.Directory_Entry_Type) return Boolean is
