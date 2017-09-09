@@ -32,13 +32,19 @@ package body SrvCtl is
         Srv_Path : String := AD.Full_Name (Dir_Ent); -- TODO simple_name
     begin
         if not Is_Up (Srv_Path) then
-            ATIO.Put_Line ("Spawning client for " & Srv_Path);
-            -- TODO Spawn_Client (Name);
+            Spawn_Client (AD.Simple_Name (Dir_Ent));
         else
             ATIO.Put_Line (Srv_Path & " is running"); -- TODO remove
             -- TODO someone COULD be cat'ing the in file
         end if;
     end Maintain_Connection;
+
+    procedure Spawn_Client (Srv_Name : String) is
+    begin
+        -- TODO don't assume cwd?
+
+        ATIO.Put_Line ("exec: ii -s " & Srv_Name & " -n ?");
+    end Spawn_Client;
 
     function Is_Up (Srv_Path : String) Return Boolean is
         -- TODO take POSIX_String?
@@ -53,6 +59,8 @@ package body SrvCtl is
         -- TODO rename Is_Fifo_Up or something
 
         -- TODO Is_Pathname ()?
+
+        -- TODO check ps environ
 
         Fd := PIO.Open (In_Path, PIO.Write_Only, PIO.Non_Blocking);
 

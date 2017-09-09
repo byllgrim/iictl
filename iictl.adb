@@ -7,6 +7,7 @@ procedure Iictl is
     Irc_Dir : String := Ada.Directories.Current_Directory;
 begin
     -- TODO output procedure information when -v?
+    -- TODO same opts as ii?
 
     -- TODO set file offset to end of channel outs?
 
