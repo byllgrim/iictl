@@ -8,7 +8,7 @@ with Posix.IO;
 package body SrvCtl is
     package AD renames Ada.Directories;
     package ATIO renames Ada.Text_IO;
-    package ASU renames Ada.Strings.Unbounded;
+    package ASU renames Ada.Strings.Unbounded; -- TODO unneeded?
     package PIO renames POSIX.IO;
 
     procedure Reconnect_Servers (Irc_Dir : String) is
