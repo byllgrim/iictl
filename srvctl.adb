@@ -11,7 +11,8 @@ package body SrvCtl is
     package ASU renames Ada.Strings.Unbounded; -- TODO unneeded?
     package PIO renames POSIX.IO;
 
-    procedure Reconnect_Servers (Irc_Dir : String) is
+    -- TODO explicit in?
+    procedure Reconnect_Servers (Irc_Dir : String; Nick : String) is
         Search : AD.Search_Type;
         Dir_Ent : AD.Directory_Entry_Type;
     begin
@@ -21,29 +22,34 @@ package body SrvCtl is
             AD.Get_Next_Entry (Search, Dir_Ent);
 
             if Is_Srv_Dir (Dir_Ent) then
-                Maintain_Connection (Dir_Ent);
+                Maintain_Connection (Dir_Ent, Nick);
             end if;
         end loop;
 
         AD.End_Search (Search);
     end Reconnect_Servers;
 
-    procedure Maintain_Connection (Dir_Ent : in AD.Directory_Entry_Type) is
+    -- TODO better formatting
+    procedure Maintain_Connection
+        (Dir_Ent : in AD.Directory_Entry_Type;
+         Nick : in String) is
+
         Srv_Path : String := AD.Full_Name (Dir_Ent); -- TODO simple_name
     begin
         if not Is_Up (Srv_Path) then
-            Spawn_Client (AD.Simple_Name (Dir_Ent));
+            Spawn_Client (AD.Simple_Name (Dir_Ent), Nick);
         else
             ATIO.Put_Line (Srv_Path & " is running"); -- TODO remove
             -- TODO someone COULD be cat'ing the in file
         end if;
     end Maintain_Connection;
 
-    procedure Spawn_Client (Srv_Name : String) is
+    procedure Spawn_Client (Srv_Name : String; Nick : String) is
     begin
         -- TODO don't assume cwd?
 
-        ATIO.Put_Line ("exec: ii -s " & Srv_Name & " -n ?");
+        -- TODO check if Nick is given
+        ATIO.Put_Line ("exec: ii -s " & Srv_Name & " -n " & Nick);
     end Spawn_Client;
 
     function Is_Up (Srv_Path : String) Return Boolean is

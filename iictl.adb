@@ -37,7 +37,7 @@ begin
     -- TODO set file offset to end of channel outs?
 
     loop
-        SrvCtl.Reconnect_Servers (Irc_Dir);
+        SrvCtl.Reconnect_Servers (Irc_Dir, ASU.To_String (Nick));
         -- TODO ChCtl.Rejoin_Channels;
         -- TODO SrvCtl.Detect_Quits;
         -- TODO ChCtl.Detect_Parts;
