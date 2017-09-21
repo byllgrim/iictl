@@ -4,12 +4,14 @@ with Ada.Exceptions; use Ada.Exceptions; -- TODO remove
 with Ada.Text_Io;
 with Ada.Strings.Unbounded; -- TODO needed?
 with Posix.Io;
+with Posix.Unsafe_Process_Primitives;
 
 package body SrvCtl is
     package AD renames Ada.Directories;
-    package ATIo renames Ada.Text_Io;
+    package ATIO renames Ada.Text_Io;
     package ASU renames Ada.Strings.Unbounded; -- TODO unneeded?
-    package PIo renames Posix.Io;
+    package PIO renames Posix.Io;
+    package PUPP renames Posix.Unsafe_Process_Primitives;
 
     -- TODO explicit in?
     procedure Reconnect_Servers (Irc_Dir : String; Nick : String) is
@@ -39,17 +41,24 @@ package body SrvCtl is
         if not Is_Up (Srv_Path) then
             Spawn_Client (AD.Simple_Name (Dir_Ent), Nick);
         else
-            ATIo.Put_Line (Srv_Path & " is running"); -- TODO remove
+            ATIO.Put_Line (Srv_Path & " is running"); -- TODO remove
             -- TODO someone COULD be cat'ing the in file
         end if;
     end Maintain_Connection;
 
     procedure Spawn_Client (Srv_Name : String; Nick : String) is
+        Cmd : Posix.Filename := "ls";
+        Argv : Posix.Posix_String_List;
     begin
         -- TODO don't assume cwd?
 
         -- TODO check if Nick is given
-        ATIo.Put_Line ("exec: ii -s " & Srv_Name & " -n " & Nick);
+        ATIO.Put_Line ("exec: ii -s " & Srv_Name & " -n " & Nick);
+        Posix.Append (Argv, "ls");
+        PUPP.Exec_Search (Cmd, Argv); -- TODO execute ii
+        -- TODO fork?
+
+        -- TODO keep track of PID?
     end Spawn_Client;
 
     function Is_Up (Srv_Path : String) Return Boolean is
@@ -58,7 +67,7 @@ package body SrvCtl is
 
         In_Path : Posix.Posix_String
                 := Posix.To_Posix_String (Srv_Path & "/in");
-        Fd : PIo.File_Descriptor;
+        Fd : PIO.File_Descriptor;
     begin
         -- It's up if it's possible to open wronly without error
 
@@ -68,7 +77,7 @@ package body SrvCtl is
 
         -- TODO check ps environ
 
-        Fd := PIo.Open (In_Path, PIo.Write_Only, PIo.Non_Blocking);
+        Fd := PIO.Open (In_Path, PIO.Write_Only, PIO.Non_Blocking);
 
         -- TODO Close
         return True;
