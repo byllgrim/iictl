@@ -5,7 +5,7 @@ with Ada.Strings.Unbounded;
 with Ada.Text_Io; -- TODO remove
 With SrvCtl;
 
-procedure Iictl is
+procedure Main is
     package ACL renames Ada.Command_Line;
     package ASU renames Ada.Strings.Unbounded;
 
@@ -46,4 +46,4 @@ begin
         -- TODO SrvCtl.Detect_Quits;
         -- TODO ChCtl.Detect_Parts;
     end loop;
-end Iictl;
+end Main;

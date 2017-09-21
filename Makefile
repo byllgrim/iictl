@@ -5,7 +5,7 @@ LARGS = -largs -lflorist
 #TODO elaborate makefile vs using gnatmake
 
 all:
-	gnatmake iictl -aI${FLORIST_SRC} ${LARGS}
+	gnatmake main.adb -o iictl -aI${FLORIST_SRC} ${LARGS}
 
 install: all
 	mkdir -p ${DESTDIR}${PREFIX}/bin
