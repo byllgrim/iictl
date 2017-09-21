@@ -12,16 +12,19 @@ procedure Iictl is
     I : Integer := 1;
     Irc_Dir : String := Ada.Directories.Current_Directory;
     Nick : ASU.Unbounded_String;
+    Verbose : Boolean := False;
 begin
-    -- TODO output procedure information when -v?
     -- TODO same opts as ii?
 
-    -- TODO make separate subprogram
+    -- TODO refactor to separate subprogram
+    -- TODO initialize I more locally
     while I <= ACL.Argument_Count loop
     begin
         if ACL.Argument (I) = "-n" then
             I := I + 1;
             Nick := ASU.To_Unbounded_String (ACL.Argument (I));
+        elsif ACL.Argument (I) = "-v" then -- TODO use case
+            Verbose := True;
         else
             raise CONSTRAINT_ERROR; -- TODO different exception
         end if;
@@ -29,7 +32,8 @@ begin
         I := I + 1;
     exception
         when CONSTRAINT_ERROR =>
-            Ada.Text_Io.Put_Line ("usage: " & ACL.Command_Name & " [-n nick]");
+            Ada.Text_Io.Put_Line ("usage: " & ACL.Command_Name
+                                  & " -v" & " [-n nick]");
         return;
     end;
     end loop;
