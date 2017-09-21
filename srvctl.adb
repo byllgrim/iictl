@@ -75,7 +75,7 @@ package body SrvCtl is
 
         -- TODO Is_Pathname ()?
 
-        -- TODO check ps environ
+        -- TODO check ps environ TODO relying on FIFO is stupid: Check PIDs
 
         Fd := PIO.Open (In_Path, PIO.Write_Only, PIO.Non_Blocking);
 
