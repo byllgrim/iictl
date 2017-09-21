@@ -51,7 +51,7 @@ package body SrvCtl is
     procedure Spawn_Client (Srv_Name : String; Nick : String) is
         use type PPI.Process_Id;
 
-        Cmd : Posix.Filename := "echo";
+        Cmd : Posix.Filename := "ii";
         Argv : Posix.Posix_String_List;
     begin
         -- TODO don't assume cwd?
@@ -60,6 +60,7 @@ package body SrvCtl is
 
         if PUPP.Fork = PPI.Null_Process_Id then -- New process
             ATIO.Put_Line ("exec: ii -s " & Srv_Name & " -n " & Nick);
+                -- TODO remove
             Posix.Append (Argv, Cmd);
             Posix.Append (Argv, "-s");
             Posix.Append (Argv, Posix.To_Posix_String(Srv_Name));
@@ -68,7 +69,7 @@ package body SrvCtl is
                 Posix.Append (Argv, Posix.To_Posix_String(Nick));
             end if;
             -- TODO refactor
-            PUPP.Exec_Search (Cmd, Argv); -- TODO execute ii
+            PUPP.Exec_Search (Cmd, Argv);
         else -- Old process
             null; -- TODO wait for new process to launch ii
         end if;
