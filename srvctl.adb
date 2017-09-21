@@ -4,6 +4,7 @@ with Ada.Exceptions; use Ada.Exceptions; -- TODO remove
 with Ada.Text_Io;
 with Ada.Strings.Unbounded; -- TODO needed?
 with Posix.Io;
+with Posix.Process_Identification;
 with Posix.Unsafe_Process_Primitives;
 
 package body SrvCtl is
@@ -11,6 +12,7 @@ package body SrvCtl is
     package ATIO renames Ada.Text_Io;
     package ASU renames Ada.Strings.Unbounded; -- TODO unneeded?
     package PIO renames Posix.Io;
+    package PPI renames Posix.Process_Identification;
     package PUPP renames Posix.Unsafe_Process_Primitives;
 
     -- TODO explicit in?
@@ -47,18 +49,32 @@ package body SrvCtl is
     end Maintain_Connection;
 
     procedure Spawn_Client (Srv_Name : String; Nick : String) is
+        use type PPI.Process_Id;
+
         Cmd : Posix.Filename := "ls";
         Argv : Posix.Posix_String_List;
     begin
         -- TODO don't assume cwd?
 
         -- TODO check if Nick is given
-        ATIO.Put_Line ("exec: ii -s " & Srv_Name & " -n " & Nick);
-        Posix.Append (Argv, "ls");
-        PUPP.Exec_Search (Cmd, Argv); -- TODO execute ii
-        -- TODO fork?
+
+        if PUPP.Fork = PPI.Null_Process_Id then -- New process
+            ATIO.Put_Line ("exec: ii -s " & Srv_Name & " -n " & Nick);
+            Posix.Append (Argv, "ls"); -- TODO append Cmd
+            PUPP.Exec_Search (Cmd, Argv); -- TODO execute ii
+        else -- Old process
+            null; -- TODO wait for new process to launch ii
+        end if;
+
+        loop
+            null; -- TODO remove
+        end loop;
+
+        -- TODO check return or exception
 
         -- TODO keep track of PID?
+
+        -- TODO reap/kill dead defuncts/zombies
     end Spawn_Client;
 
     function Is_Up (Srv_Path : String) Return Boolean is
