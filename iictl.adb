@@ -2,7 +2,7 @@
 with Ada.Command_Line;
 with Ada.Directories;
 with Ada.Strings.Unbounded;
-with Ada.Text_IO; -- TODO remove
+with Ada.Text_Io; -- TODO remove
 With SrvCtl;
 
 procedure Iictl is
@@ -29,7 +29,7 @@ begin
         I := I + 1;
     exception
         when CONSTRAINT_ERROR =>
-            Ada.Text_IO.Put_Line ("usage: " & ACL.Command_Name & " [-n nick]");
+            Ada.Text_Io.Put_Line ("usage: " & ACL.Command_Name & " [-n nick]");
         return;
     end;
     end loop;

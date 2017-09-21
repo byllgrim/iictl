@@ -1,15 +1,15 @@
 -- See LICENSE file for cc0 license details
 with Ada.Directories;
 with Ada.Exceptions; use Ada.Exceptions; -- TODO remove
-with Ada.Text_IO;
+with Ada.Text_Io;
 with Ada.Strings.Unbounded; -- TODO needed?
-with Posix.IO;
+with Posix.Io;
 
 package body SrvCtl is
     package AD renames Ada.Directories;
-    package ATIO renames Ada.Text_IO;
+    package ATIo renames Ada.Text_Io;
     package ASU renames Ada.Strings.Unbounded; -- TODO unneeded?
-    package PIO renames POSIX.IO;
+    package PIo renames Posix.Io;
 
     -- TODO explicit in?
     procedure Reconnect_Servers (Irc_Dir : String; Nick : String) is
@@ -39,7 +39,7 @@ package body SrvCtl is
         if not Is_Up (Srv_Path) then
             Spawn_Client (AD.Simple_Name (Dir_Ent), Nick);
         else
-            ATIO.Put_Line (Srv_Path & " is running"); -- TODO remove
+            ATIo.Put_Line (Srv_Path & " is running"); -- TODO remove
             -- TODO someone COULD be cat'ing the in file
         end if;
     end Maintain_Connection;
@@ -49,16 +49,16 @@ package body SrvCtl is
         -- TODO don't assume cwd?
 
         -- TODO check if Nick is given
-        ATIO.Put_Line ("exec: ii -s " & Srv_Name & " -n " & Nick);
+        ATIo.Put_Line ("exec: ii -s " & Srv_Name & " -n " & Nick);
     end Spawn_Client;
 
     function Is_Up (Srv_Path : String) Return Boolean is
-        -- TODO take POSIX_String?
+        -- TODO take Posix_String?
         use type Posix.Error_Code;
 
-        In_Path : Posix.POSIX_String
-                := Posix.To_POSIX_String (Srv_Path & "/in");
-        Fd : PIO.File_Descriptor;
+        In_Path : Posix.Posix_String
+                := Posix.To_Posix_String (Srv_Path & "/in");
+        Fd : PIo.File_Descriptor;
     begin
         -- It's up if it's possible to open wronly without error
 
@@ -68,16 +68,16 @@ package body SrvCtl is
 
         -- TODO check ps environ
 
-        Fd := PIO.Open (In_Path, PIO.Write_Only, PIO.Non_Blocking);
+        Fd := PIo.Open (In_Path, PIo.Write_Only, PIo.Non_Blocking);
 
         -- TODO Close
         return True;
     exception
-        when Error : Posix.POSIX_ERROR =>
-            if Posix.Get_Error_Code = Posix.ENXIO then
+        when Error : Posix.Posix_ERROR =>
+            if Posix.Get_Error_Code = Posix.ENXIo then
                 return False; -- Fifo is down
             else
-                raise Posix.POSIX_ERROR with Exception_Message (Error);
+                raise Posix.Posix_ERROR with Exception_Message (Error);
                 -- TODO better solution
             end if;
     end Is_Up;
