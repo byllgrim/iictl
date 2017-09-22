@@ -1,8 +1,9 @@
 -- See LICENSE file for cc0 license details
+with Ada.Containers.Vectors;
 with Ada.Directories;
 with Ada.Exceptions; use Ada.Exceptions; -- TODO remove
-with Ada.Text_Io;
 with Ada.Strings.Unbounded; -- TODO needed?
+with Ada.Text_Io;
 with Iictl;
 with Posix.Io;
 with Posix.Process_Identification;
@@ -10,16 +11,21 @@ with Posix.Unsafe_Process_Primitives;
 
 package body SrvCtl is
     package AD renames Ada.Directories;
-    package ATIO renames Ada.Text_Io;
     package ASU renames Ada.Strings.Unbounded; -- TODO unneeded?
+    package ATIO renames Ada.Text_Io;
     package PIO renames Posix.Io;
     package PPI renames Posix.Process_Identification;
     package PUPP renames Posix.Unsafe_Process_Primitives;
+
+    use type ASU.Unbounded_String; -- TODO this is ugly
+    package Vector_Pkg is new Ada.Containers.Vectors
+        (Natural, ASU.Unbounded_String);
 
     -- TODO explicit in?
     procedure Reconnect_Servers (Irc_Dir : String; Nick : String) is
         Search : AD.Search_Type;
         Dir_Ent : AD.Directory_Entry_Type;
+        Server_List : Vector_Pkg.Vector;
     begin
         -- TODO Server_List := Directory_Servers;
         -- TODO Process_List := Proc_Instances; -- TODO garbage collector?
@@ -74,6 +80,7 @@ package body SrvCtl is
                 Posix.Append (Argv, "-n");
                 Posix.Append (Argv, Posix.To_Posix_String(Nick));
             end if;
+            -- TODO exec with ii -i prefix
             -- TODO refactor
             PUPP.Exec_Search (Cmd, Argv);
         else -- Old process

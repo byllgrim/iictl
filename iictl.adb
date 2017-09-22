@@ -15,6 +15,7 @@ package body Iictl is
     procedure Iictl is
         I : Integer := 1;
         Irc_Dir : String := Ada.Directories.Current_Directory;
+            -- TODO different directories for different servers
         Nick : ASU.Unbounded_String;
     begin
         -- TODO same opts as ii?
