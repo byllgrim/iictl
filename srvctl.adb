@@ -3,6 +3,7 @@ with Ada.Directories;
 with Ada.Exceptions; use Ada.Exceptions; -- TODO remove
 with Ada.Text_Io;
 with Ada.Strings.Unbounded; -- TODO needed?
+with Iictl;
 with Posix.Io;
 with Posix.Process_Identification;
 with Posix.Unsafe_Process_Primitives;
@@ -59,8 +60,8 @@ package body SrvCtl is
         -- TODO check if Nick is given
 
         if PUPP.Fork = PPI.Null_Process_Id then -- New process
-            ATIO.Put_Line ("exec: ii -s " & Srv_Name & " -n " & Nick);
-                -- TODO remove
+            Iictl.Verbose_Print ("Iictl: Spawning ii for " & Srv_Name);
+
             Posix.Append (Argv, Cmd);
             Posix.Append (Argv, "-s");
             Posix.Append (Argv, Posix.To_Posix_String(Srv_Name));
@@ -73,10 +74,6 @@ package body SrvCtl is
         else -- Old process
             null; -- TODO wait for new process to launch ii
         end if;
-
-        loop
-            null; -- TODO remove
-        end loop;
 
         -- TODO check return or exception
 
@@ -106,11 +103,11 @@ package body SrvCtl is
         -- TODO Close
         return True;
     exception
-        when Error : Posix.Posix_ERROR =>
-            if Posix.Get_Error_Code = Posix.ENXIo then
+        when Error : Posix.Posix_Error =>
+            if Posix.Get_Error_Code = Posix.Enxio then
                 return False; -- Fifo is down
             else
-                raise Posix.Posix_ERROR with Exception_Message (Error);
+                raise Posix.Posix_Error with Exception_Message (Error);
                 -- TODO better solution
             end if;
     end Is_Up;

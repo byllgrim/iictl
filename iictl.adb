@@ -28,6 +28,7 @@ package body Iictl is
                 Nick := ASU.To_Unbounded_String (ACL.Argument (I));
             elsif ACL.Argument (I) = "-v" then -- TODO use case
                 Verbose := True;
+                Verbose_Print ("Iictl: Verbose printing on");
             else
                 raise CONSTRAINT_ERROR; -- TODO different exception
             end if;
@@ -43,7 +44,9 @@ package body Iictl is
 
         -- TODO set file offset to end of channel outs?
 
-        Verbose_Print ("Iictl started");
+        Verbose_Print ("Iictl: Nick is '"
+                       & ASU.To_String(Nick) & "'"); -- TODO if nick length
+        Verbose_Print ("Iictl: started");
 
         loop
             SrvCtl.Reconnect_Servers (Irc_Dir, ASU.To_String (Nick));
@@ -56,7 +59,9 @@ package body Iictl is
     procedure Verbose_Print (Msg : String) is -- TODO rename
     begin
         if Verbose then
+            -- TODO prepend with "Iictl: "?
             ATIO.Put_Line (Msg);
+            -- TODO print to stderr?
         end if;
     end Verbose_Print;
 end Iictl;
