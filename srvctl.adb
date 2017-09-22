@@ -21,6 +21,11 @@ package body SrvCtl is
         Search : AD.Search_Type;
         Dir_Ent : AD.Directory_Entry_Type;
     begin
+        -- TODO Server_List := Directory_Servers;
+        -- TODO Process_List := Proc_Instances; -- TODO garbage collector?
+        -- TODO Kill_Nameless(Process_List);
+        -- TODO Respawn_Servers(Server_List, Process_List);
+
         AD.Start_Search (Search, Irc_Dir, "");
 
         while AD.More_Entries (Search) loop
