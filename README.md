@@ -2,12 +2,13 @@
 Controlling ii - Manage server/channel connections.
 
 Written in **Ada** because I wanted to learn it.
+It would've been cleaner in C.
 
-It sucks a bit, but it sucks less than other irc clients.
+It sucks a bit, but I hope it will suck less than other irc clients.
 TODO link to ii and tii.
 
 ## Dependencies
-Ada (TODO which version?) compiler e.g. gnat.
+Ada 2005 compiler e.g. gnat.
 
 Florist (a posix library) TODO link.
 
