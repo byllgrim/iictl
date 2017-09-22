@@ -25,8 +25,9 @@ package body SrvCtl is
     procedure Reconnect_Servers (Irc_Dir : String; Nick : String) is
         Search : AD.Search_Type;
         Dir_Ent : AD.Directory_Entry_Type;
-        Server_List : Vector_Pkg.Vector;
+        Server_List : Iictl.Vectors.Vector;
     begin
+        --Server_List := Scan_Server_Directory (Irc_Dir);
         -- TODO Server_List := Directory_Servers;
         -- TODO Process_List := Proc_Instances; -- TODO garbage collector?
         -- TODO Kill_Nameless(Process_List);
