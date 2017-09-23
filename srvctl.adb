@@ -30,7 +30,6 @@ package body SrvCtl is
     begin
         Server_List := Scan_Server_Directory (Irc_Dir);
         Process_List := Scan_Ii_Procs;
-        -- TODO Kill_Nameless (Process_List);
         -- TODO Respawn_Servers (Server_List, Process_List);
     end Reconnect_Servers;
 
@@ -227,7 +226,24 @@ package body SrvCtl is
     function Get_Server_Name (Dir_Ent : AD.Directory_Entry_Type)
         return ASU.Unbounded_String
     is
+        -- TODO define type for proc pid string
+        File : ATIO.File_Type;
+        Cmdline : ASU.Unbounded_String;
+        First : Positive := 1;
+        Last : Natural := 0;
     begin
+        ATIO.Open (File,
+                   ATIO.In_File,
+                   "/proc/" & AD.Simple_Name (Dir_Ent) & "/cmdline");
+        Cmdline := ASU.To_Unbounded_String (ATIO.Get_Line (File));
+        --ASU.Find_Token (Cmdline, Maps.Character_Set, 0, Membership, First, Last);
+        --0 vs Source'First
+
+        if Last = 0 then
+            null; -- TODO add to list so to ignore nameless
+        end if;
+
+        ATIO.Close (File);
         return ASU.To_Unbounded_String ("TODO Get_Server_Name"); -- TODO
     end;
 end SrvCtl;
