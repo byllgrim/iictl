@@ -15,5 +15,6 @@ package SrvCtl is
     -- TODO use private?
     function Scan_Server_Directory (Irc_Dir : in String)
         return Iictl.Vectors.Vector;
+    function Scan_Ii_Procs return Iictl.Vectors.Vector;
     -- TODO sort
 end SrvCtl;

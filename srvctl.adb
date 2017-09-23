@@ -16,6 +16,7 @@ package body SrvCtl is
     package PIO renames Posix.Io;
     package PPI renames Posix.Process_Identification;
     package PUPP renames Posix.Unsafe_Process_Primitives;
+    -- TODO IC Iictl.Vectors
 
     use type ASU.Unbounded_String; -- TODO this is ugly
     package Vector_Pkg is new Ada.Containers.Vectors
@@ -23,10 +24,12 @@ package body SrvCtl is
 
     -- TODO explicit in?
     procedure Reconnect_Servers (Irc_Dir : String; Nick : String) is
-        Server_List : Iictl.Vectors.Vector;
+        Server_List : Iictl.Vectors.Vector; -- TODO rename Directory_List?
+        Process_List : Iictl.Vectors.Vector;
+        -- TODO garbage collector?
     begin
         Server_List := Scan_Server_Directory (Irc_Dir);
-        -- TODO Process_List := Proc_Instances; -- TODO garbage collector?
+        Process_List := Scan_Ii_Procs;
         -- TODO Kill_Nameless (Process_List);
         -- TODO Respawn_Servers (Server_List, Process_List);
     end Reconnect_Servers;
@@ -148,5 +151,11 @@ package body SrvCtl is
 
         AD.End_Search (Search);
         return Server_List;
+    end;
+
+    function Scan_Ii_Procs return Iictl.Vectors.Vector is
+        Process_List : Iictl.Vectors.Vector;
+    begin
+        return Process_List; -- TODO
     end;
 end SrvCtl;
