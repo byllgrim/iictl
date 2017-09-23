@@ -171,7 +171,12 @@ package body SrvCtl is
     end;
 
     function Is_Ii_Proc (Dir_Ent : AD.Directory_Entry_Type) return Boolean is
+        Dir_Name : String := AD.Simple_Name (Dir_Ent);
     begin
+        if not Iictl.Is_Integral (Dir_Name) then
+            return False;
+        end if;
+
         return False; -- TODO
     end;
 

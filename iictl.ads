@@ -9,4 +9,5 @@ package Iictl is
 
     procedure Iictl;
     procedure Verbose_Print (Msg : String);
+    function Is_Integral (Text : String) return Boolean; -- TODO package util?
 end Iictl;

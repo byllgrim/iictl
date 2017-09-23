@@ -65,4 +65,14 @@ package body Iictl is
             -- TODO print to stderr?
         end if;
     end Verbose_Print;
+
+    function Is_Integral (Text : String) return Boolean is
+        Dummy : Integer;
+    begin
+        Dummy := Integer'Value (Text);
+        return True;
+    exception
+        when others =>
+            return False;
+    end;
 end Iictl;
