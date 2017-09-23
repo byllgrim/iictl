@@ -187,6 +187,8 @@ package body SrvCtl is
         ATIO.Open (File, ATIO.In_File, "/proc/" & Dir_Name & "/cmdline");
         Cmdline := ASU.To_Unbounded_String (ATIO.Get_Line (File));
 
+        -- TODO check only pids for current user
+
         --for I in Integer range 1 .. Cmdline.Length loop
         -- TODO I = 0 .. length
         for I in Integer range 1 .. ASU.Length (Cmdline) loop
@@ -229,21 +231,24 @@ package body SrvCtl is
         -- TODO define type for proc pid string
         File : ATIO.File_Type;
         Cmdline : ASU.Unbounded_String;
-        First : Positive := 1;
-        Last : Natural := 0;
+        Index : Natural := 0;
+        Ret : ASU.Unbounded_String;
     begin
         ATIO.Open (File,
                    ATIO.In_File,
                    "/proc/" & AD.Simple_Name (Dir_Ent) & "/cmdline");
         Cmdline := ASU.To_Unbounded_String (ATIO.Get_Line (File));
-        --ASU.Find_Token (Cmdline, Maps.Character_Set, 0, Membership, First, Last);
-        --0 vs Source'First
+        Index := ASU.Index (Cmdline, "-s");
 
-        if Last = 0 then
-            null; -- TODO add to list so to ignore nameless
+        if Index = 0 then
+            Ret := ASU.To_Unbounded_String ("irc.freenode.net");
+            -- TODO consider default host
+        else
+            Ret := ASU.Unbounded_Slice (CmdLine, Index + 3, ASU.Length (Cmdline));
+            -- TODO limit length of name
         end if;
 
         ATIO.Close (File);
-        return ASU.To_Unbounded_String ("TODO Get_Server_Name"); -- TODO
+        return Ret;
     end;
 end SrvCtl;
