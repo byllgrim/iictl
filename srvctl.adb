@@ -173,13 +173,31 @@ package body SrvCtl is
     function Is_Ii_Proc (Dir_Ent : AD.Directory_Entry_Type) return Boolean is
         Dir_Name : String := AD.Simple_Name (Dir_Ent);
         File : ATIO.File_Type;
+        Cmdline : ASU.Unbounded_String;
     begin
         if not Iictl.Is_Integral (Dir_Name) then
             return False;
         end if;
 
         ATIO.Open (File, ATIO.In_File, "/proc/" & Dir_Name & "/cmdline");
-        -- TODO check if cmd name is ii
+        Cmdline := ASU.To_Unbounded_String (ATIO.Get_Line (File));
+        --for I in Integer range 1 .. Cmdline.Length loop
+        for I in Integer range 1 .. ASU.Length (Cmdline) loop
+            --if Cmdline.Element (I) = Character'Val (0) then
+            if ASU.Element (Cmdline, I) = Character'Val (0) then
+                if ASU.Element (Cmdline, I - 1) /= 'i' then
+                    return False;
+                end if;
+
+                if ASU.Element (Cmdline, I - 2) /= 'i' then
+                    return False;
+                end if;
+
+                -- TODO other programs ending in ii?
+                -- TODO check "*/ii" or "^ii"
+            end if;
+        end loop;
+        -- TODO refactor
 
         -- TODO close
         return False; -- TODO
