@@ -167,13 +167,19 @@ package body SrvCtl is
         end loop;
         AD.End_Search (Search);
 
-        return Process_List; -- TODO
+        -- TODO remove this loop
+        for I in Integer range 0 .. Integer (Process_List.Length) - 1 loop
+        ATIO.Put_Line (ASU.To_String (Process_List.Element (I)));
+        end loop;
+
+        return Process_List;
     end;
 
     function Is_Ii_Proc (Dir_Ent : AD.Directory_Entry_Type) return Boolean is
         Dir_Name : String := AD.Simple_Name (Dir_Ent);
         File : ATIO.File_Type;
         Cmdline : ASU.Unbounded_String;
+        Ret : Boolean := False;
     begin
         if not Iictl.Is_Integral (Dir_Name) then
             return False;
@@ -181,28 +187,40 @@ package body SrvCtl is
 
         ATIO.Open (File, ATIO.In_File, "/proc/" & Dir_Name & "/cmdline");
         Cmdline := ASU.To_Unbounded_String (ATIO.Get_Line (File));
+
         --for I in Integer range 1 .. Cmdline.Length loop
+        -- TODO I = 0 .. length
         for I in Integer range 1 .. ASU.Length (Cmdline) loop
             --if Cmdline.Element (I) = Character'Val (0) then
             if ASU.Element (Cmdline, I) = Character'Val (0) then
                 if ASU.Element (Cmdline, I - 1) /= 'i' then
-                    return False;
-                end if;
-
-                if ASU.Element (Cmdline, I - 2) /= 'i' then
-                    return False;
+                    ret := False;
+                elsif ASU.Element (Cmdline, I - 2) /= 'i' then
+                    ret := False;
+                else
+                    Iictl.Verbose_Print ("Iictl: Found ii: "
+                                          & ASU.To_String (Cmdline));
+                    ret := True;
                 end if;
 
                 -- TODO other programs ending in ii?
                 -- TODO check "*/ii" or "^ii"
+
+                goto Exit_Is_Ii_Proc;
             end if;
+            -- TODO non null-terminated cmdline
         end loop;
         -- TODO refactor
 
-        -- TODO close
-        return False; -- TODO
+        Ret := False; -- Cmdline was not null-terminated
+
+    <<Exit_Is_Ii_Proc>>
+        ATIO.Close (File);
+        return Ret;
     exception
         when ATIO.End_Error =>
+            -- TODO goto Exit_Is_Ii_Proc
+            ATIO.Close (File);
             return False;
     end;
 
@@ -210,6 +228,6 @@ package body SrvCtl is
         return ASU.Unbounded_String
     is
     begin
-        return ASU.To_Unbounded_String ("TODO"); -- TODO
+        return ASU.To_Unbounded_String ("TODO Get_Server_Name"); -- TODO
     end;
 end SrvCtl;
