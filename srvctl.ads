@@ -1,4 +1,5 @@
 with Ada.Directories;
+with Iictl;
 with Posix;
 
 package SrvCtl is
@@ -12,6 +13,7 @@ package SrvCtl is
     function Is_Srv_Dir
         (Dir_Ent : in Ada.Directories.Directory_Entry_Type) return Boolean;
     -- TODO use private?
-    --function Scan_Server_Directory (Irc_Dir : in String);
+    function Scan_Server_Directory (Irc_Dir : in String)
+        return Iictl.Vectors.Vector;
     -- TODO sort
 end SrvCtl;

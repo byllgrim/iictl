@@ -23,27 +23,12 @@ package body SrvCtl is
 
     -- TODO explicit in?
     procedure Reconnect_Servers (Irc_Dir : String; Nick : String) is
-        Search : AD.Search_Type;
-        Dir_Ent : AD.Directory_Entry_Type;
         Server_List : Iictl.Vectors.Vector;
     begin
-        --Server_List := Scan_Server_Directory (Irc_Dir);
-        -- TODO Server_List := Directory_Servers;
+        Server_List := Scan_Server_Directory (Irc_Dir);
         -- TODO Process_List := Proc_Instances; -- TODO garbage collector?
-        -- TODO Kill_Nameless(Process_List);
-        -- TODO Respawn_Servers(Server_List, Process_List);
-
-        AD.Start_Search (Search, Irc_Dir, "");
-
-        while AD.More_Entries (Search) loop
-            AD.Get_Next_Entry (Search, Dir_Ent);
-
-            if Is_Srv_Dir (Dir_Ent) then
-                Maintain_Connection (Dir_Ent, Nick);
-            end if;
-        end loop;
-
-        AD.End_Search (Search);
+        -- TODO Kill_Nameless (Process_List);
+        -- TODO Respawn_Servers (Server_List, Process_List);
     end Reconnect_Servers;
 
     -- TODO better formatting
@@ -140,4 +125,28 @@ package body SrvCtl is
             return True;
         end if;
     end Is_Srv_Dir;
+
+    function Scan_Server_Directory (Irc_Dir : in String)
+        return Iictl.Vectors.Vector is
+
+        Search : AD.Search_Type;
+        Dir_Ent : AD.Directory_Entry_Type;
+        Server_Name : ASU.Unbounded_String;
+        Server_List : Iictl.Vectors.Vector;
+    begin
+        AD.Start_Search (Search, Irc_Dir, ""); -- TODO get dir from proc or cwd
+
+        while AD.More_Entries (Search) loop
+            AD.Get_Next_Entry (Search, Dir_Ent);
+
+            if Is_Srv_Dir (Dir_Ent) then
+                Server_Name := ASU.To_Unbounded_String
+                                   (AD.Simple_Name (Dir_Ent));
+                Server_List.Append (Server_Name);
+            end if;
+        end loop;
+
+        AD.End_Search (Search);
+        return Server_List;
+    end;
 end SrvCtl;
