@@ -172,12 +172,20 @@ package body SrvCtl is
 
     function Is_Ii_Proc (Dir_Ent : AD.Directory_Entry_Type) return Boolean is
         Dir_Name : String := AD.Simple_Name (Dir_Ent);
+        File : ATIO.File_Type;
     begin
         if not Iictl.Is_Integral (Dir_Name) then
             return False;
         end if;
 
+        ATIO.Open (File, ATIO.In_File, "/proc/" & Dir_Name & "/cmdline");
+        -- TODO check if cmd name is ii
+
+        -- TODO close
         return False; -- TODO
+    exception
+        when ATIO.End_Error =>
+            return False;
     end;
 
     function Get_Server_Name (Dir_Ent : AD.Directory_Entry_Type)
