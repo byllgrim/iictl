@@ -37,7 +37,8 @@ package body SrvCtl is
     -- TODO better formatting
     procedure Maintain_Connection
         (Dir_Ent : in AD.Directory_Entry_Type;
-         Nick : in String) is
+         Nick : in String)
+    is
 
         Srv_Path : String := AD.Full_Name (Dir_Ent); -- TODO simple_name
     begin
@@ -130,15 +131,14 @@ package body SrvCtl is
     end Is_Srv_Dir;
 
     function Scan_Server_Directory (Irc_Dir : in String)
-        return Iictl.Vectors.Vector is
-
+        return Iictl.Vectors.Vector
+    is
         Search : AD.Search_Type;
         Dir_Ent : AD.Directory_Entry_Type;
         Server_Name : ASU.Unbounded_String;
         Server_List : Iictl.Vectors.Vector;
     begin
         AD.Start_Search (Search, Irc_Dir, ""); -- TODO get dir from proc or cwd
-
         while AD.More_Entries (Search) loop
             AD.Get_Next_Entry (Search, Dir_Ent);
 
@@ -148,14 +148,37 @@ package body SrvCtl is
                 Server_List.Append (Server_Name);
             end if;
         end loop;
-
         AD.End_Search (Search);
+
         return Server_List;
     end;
 
     function Scan_Ii_Procs return Iictl.Vectors.Vector is
+        Search : AD.Search_Type;
+        Dir_Ent : AD.Directory_Entry_Type;
         Process_List : Iictl.Vectors.Vector;
     begin
+        AD.Start_Search (Search, "/proc", "");
+        while AD.More_Entries (Search) loop
+            AD.Get_Next_Entry (Search, Dir_Ent);
+            if Is_Ii_Proc (Dir_Ent) then
+                Process_List.Append (Get_Server_Name (Dir_Ent));
+            end if;
+        end loop;
+        AD.End_Search (Search);
+
         return Process_List; -- TODO
+    end;
+
+    function Is_Ii_Proc (Dir_Ent : AD.Directory_Entry_Type) return Boolean is
+    begin
+        return False; -- TODO
+    end;
+
+    function Get_Server_Name (Dir_Ent : AD.Directory_Entry_Type)
+        return ASU.Unbounded_String
+    is
+    begin
+        return ASU.To_Unbounded_String ("TODO"); -- TODO
     end;
 end SrvCtl;

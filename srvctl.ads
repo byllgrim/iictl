@@ -1,4 +1,5 @@
 with Ada.Directories;
+with Ada.Strings.Unbounded;
 with Iictl;
 with Posix;
 
@@ -17,4 +18,8 @@ package SrvCtl is
         return Iictl.Vectors.Vector;
     function Scan_Ii_Procs return Iictl.Vectors.Vector;
     -- TODO sort
+    function Is_Ii_Proc (Dir_Ent : Ada.Directories.Directory_Entry_Type)
+        return Boolean;
+    function Get_Server_Name (Dir_Ent : Ada.Directories.Directory_Entry_Type)
+        return Ada.Strings.Unbounded.Unbounded_String;
 end SrvCtl;
