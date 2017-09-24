@@ -2,6 +2,8 @@
 with Ada.Containers.Vectors;
 with Ada.Directories;
 with Ada.Exceptions; use Ada.Exceptions; -- TODO remove
+with Ada.Strings;
+with Ada.Strings.Maps.Constants;
 with Ada.Strings.Unbounded; -- TODO needed?
 with Ada.Text_Io;
 with Iictl;
@@ -11,6 +13,8 @@ with Posix.Unsafe_Process_Primitives;
 
 package body SrvCtl is
     package AD renames Ada.Directories;
+    package AS renames Ada.Strings;
+    package ASMC renames Ada.Strings.Maps.Constants;
     package ASU renames Ada.Strings.Unbounded; -- TODO unneeded?
     package ATIO renames Ada.Text_Io;
     package PIO renames Posix.Io;
@@ -231,21 +235,30 @@ package body SrvCtl is
         -- TODO define type for proc pid string
         File : ATIO.File_Type;
         Cmdline : ASU.Unbounded_String;
-        Index : Natural := 0;
+        Flag_First : Natural := 0; -- TODO rename Flag_Start?
+        Ctrl_First : Positive;
+        Ctrl_Last : Natural;
         Ret : ASU.Unbounded_String;
+        Null_Char : ASU.Unbounded_String;
     begin
         ATIO.Open (File,
                    ATIO.In_File,
                    "/proc/" & AD.Simple_Name (Dir_Ent) & "/cmdline");
         Cmdline := ASU.To_Unbounded_String (ATIO.Get_Line (File));
-        Index := ASU.Index (Cmdline, "-s");
+        Flag_First := ASU.Index (Cmdline, "-s");
+        ASU.Find_Token (Cmdline, ASMC.Control_Set, Flag_First + 3, AS.Inside,
+                        Ctrl_First, Ctrl_Last);
+        -- TODO find token after checking Flag_First?
 
-        if Index = 0 then
+        if Flag_First = 0 then
             Ret := ASU.To_Unbounded_String ("irc.freenode.net");
             -- TODO consider default host
         else
-            Ret := ASU.Unbounded_Slice (CmdLine, Index + 3, ASU.Length (Cmdline));
-            -- TODO limit length of name
+            if Ctrl_Last = 0 then
+                Ctrl_Last := ASU.Length(Cmdline);
+            end if;
+
+            Ret := ASU.Unbounded_Slice (CmdLine, Flag_First + 3, Ctrl_Last);
         end if;
 
         ATIO.Close (File);
