@@ -17,10 +17,10 @@ package body SrvCtl is
     package ASMC renames Ada.Strings.Maps.Constants;
     package ASU renames Ada.Strings.Unbounded; -- TODO unneeded?
     package ATIO renames Ada.Text_Io;
+    package IV renames Iictl.Vectors;
     package PIO renames Posix.Io;
     package PPI renames Posix.Process_Identification;
     package PUPP renames Posix.Unsafe_Process_Primitives;
-    -- TODO IC Iictl.Vectors
 
     use type ASU.Unbounded_String; -- TODO this is ugly
     package Vector_Pkg is new Ada.Containers.Vectors
@@ -28,8 +28,8 @@ package body SrvCtl is
 
     -- TODO explicit in?
     procedure Reconnect_Servers (Irc_Dir : String; Nick : String) is
-        Server_List : Iictl.Vectors.Vector; -- TODO rename Directory_List?
-        Process_List : Iictl.Vectors.Vector;
+        Server_List : IV.Vector; -- TODO rename Directory_List?
+        Process_List : IV.Vector;
         -- TODO garbage collector?
     begin
         Server_List := Scan_Server_Directory (Irc_Dir);
@@ -117,8 +117,8 @@ package body SrvCtl is
             end if;
     end Is_Up;
 
-    procedure Respawn_Clients (Server_List : Iictl.Vectors.Vector;
-                               Process_List : Iictl.Vectors.Vector)
+    procedure Respawn_Clients (Server_List : IV.Vector;
+                               Process_List : IV.Vector)
     is
     begin
         null; -- TODO
@@ -141,12 +141,12 @@ package body SrvCtl is
     end Is_Srv_Dir;
 
     function Scan_Server_Directory (Irc_Dir : in String)
-        return Iictl.Vectors.Vector
+        return IV.Vector
     is
         Search : AD.Search_Type;
         Dir_Ent : AD.Directory_Entry_Type;
         Server_Name : ASU.Unbounded_String;
-        Server_List : Iictl.Vectors.Vector;
+        Server_List : IV.Vector;
     begin
         AD.Start_Search (Search, Irc_Dir, ""); -- TODO get dir from proc or cwd
         while AD.More_Entries (Search) loop
@@ -163,10 +163,10 @@ package body SrvCtl is
         return Server_List;
     end;
 
-    function Scan_Ii_Procs return Iictl.Vectors.Vector is
+    function Scan_Ii_Procs return IV.Vector is
         Search : AD.Search_Type;
         Dir_Ent : AD.Directory_Entry_Type;
-        Process_List : Iictl.Vectors.Vector;
+        Process_List : IV.Vector;
     begin
         AD.Start_Search (Search, "/proc", "");
         while AD.More_Entries (Search) loop
