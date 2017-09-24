@@ -9,6 +9,8 @@ package SrvCtl is
         (Dir_Ent : in Ada.Directories.Directory_Entry_Type;
          Nick : in String);
     procedure Spawn_Client (Srv_Name : in String; Nick : in String);
+    procedure Respawn_Clients (Server_List : Iictl.Vectors.Vector;
+                               Process_List : Iictl.Vectors.Vector);
     function Is_Up
         (Srv_Path : in String) return Boolean;
     function Is_Srv_Dir

@@ -34,7 +34,7 @@ package body SrvCtl is
     begin
         Server_List := Scan_Server_Directory (Irc_Dir);
         Process_List := Scan_Ii_Procs;
-        -- TODO Respawn_Servers (Server_List, Process_List);
+        Respawn_Clients (Server_List, Process_List);
     end Reconnect_Servers;
 
     -- TODO better formatting
@@ -116,6 +116,13 @@ package body SrvCtl is
                 -- TODO better solution
             end if;
     end Is_Up;
+
+    procedure Respawn_Clients (Server_List : Iictl.Vectors.Vector;
+                               Process_List : Iictl.Vectors.Vector)
+    is
+    begin
+        null; -- TODO
+    end;
 
     function Is_Srv_Dir (Dir_Ent : AD.Directory_Entry_Type) return Boolean is
         use type AD.File_Kind;
