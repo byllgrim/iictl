@@ -64,7 +64,7 @@ package body SrvCtl is
         -- TODO check if Nick is given
 
         if PUPP.Fork = PPI.Null_Process_Id then -- New process
-            Iictl.Verbose_Print ("Iictl: Spawning ii for " & Srv_Name);
+            Iictl.Verbose_Print ("Iictl: Spawn_Client: " & Srv_Name);
 
             Posix.Append (Argv, Cmd);
             Posix.Append (Argv, "-s");
@@ -121,7 +121,20 @@ package body SrvCtl is
                                Process_List : IV.Vector)
     is
     begin
-        null; -- TODO
+        -- TODO use iterator in other functions as well
+        for S of Server_List loop
+            if Process_List.Find_Index (S) = IV.No_Index then
+                Iictl.Verbose_Print ("Iictl: Respawn_Clients: No proc: "
+                                     & ASU.To_String (S));
+                Spawn_Client (ASU.To_String (S), "nick");
+                -- TODO Send name as Unbounded_String
+                -- TODO get nick and all other flags
+            else
+                Iictl.Verbose_Print ("Iictl: Respawn_Clients: Found proc: "
+                                     & ASU.To_String (S));
+                -- TODO remove
+            end if;
+        end loop;
     end;
 
     function Is_Srv_Dir (Dir_Ent : AD.Directory_Entry_Type) return Boolean is
@@ -205,7 +218,7 @@ package body SrvCtl is
                 elsif ASU.Element (Cmdline, I - 2) /= 'i' then
                     ret := False;
                 else
-                    Iictl.Verbose_Print ("Iictl: Found ii: "
+                    Iictl.Verbose_Print ("Iictl: Is_Ii_Proc found: "
                                           & ASU.To_String (Cmdline));
                     ret := True;
                 end if;
@@ -231,6 +244,7 @@ package body SrvCtl is
             return False;
     end;
 
+    -- TODO rename Get_Server_Flags to get host, nick, port etc
     function Get_Server_Name (Dir_Ent : AD.Directory_Entry_Type)
         return ASU.Unbounded_String
     is
