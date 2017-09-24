@@ -170,11 +170,6 @@ package body SrvCtl is
         end loop;
         AD.End_Search (Search);
 
-        -- TODO remove this loop
-        for I in Integer range 0 .. Integer (Process_List.Length) - 1 loop
-        ATIO.Put_Line (ASU.To_String (Process_List.Element (I)));
-        end loop;
-
         return Process_List;
     end;
 
@@ -245,17 +240,16 @@ package body SrvCtl is
                    ATIO.In_File,
                    "/proc/" & AD.Simple_Name (Dir_Ent) & "/cmdline");
         Cmdline := ASU.To_Unbounded_String (ATIO.Get_Line (File));
-        Flag_First := ASU.Index (Cmdline, "-s");
-        ASU.Find_Token (Cmdline, ASMC.Control_Set, Flag_First + 3, AS.Inside,
-                        Ctrl_First, Ctrl_Last);
-        -- TODO find token after checking Flag_First?
 
+        Flag_First := ASU.Index (Cmdline, "-s");
         if Flag_First = 0 then
             Ret := ASU.To_Unbounded_String ("irc.freenode.net");
             -- TODO consider default host
         else
+            ASU.Find_Token (Cmdline, ASMC.Control_Set, Flag_First + 3,
+                            AS.Inside, Ctrl_First, Ctrl_Last);
             if Ctrl_Last = 0 then
-                Ctrl_Last := ASU.Length(Cmdline);
+                Ctrl_Last := ASU.Length (Cmdline);
             end if;
 
             Ret := ASU.Unbounded_Slice (CmdLine, Flag_First + 3, Ctrl_Last);
