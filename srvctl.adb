@@ -122,9 +122,10 @@ package body SrvCtl is
     is
     begin
         -- TODO use iterator in other functions as well
+        Server_Loop:
         for S of Server_List loop
             if Process_List.Find_Index (S) = IV.No_Index then
-                Iictl.Verbose_Print ("Iictl: Respawn_Clients: No proc: "
+                Iictl.Verbose_Print ("Iictl: Respawn_Clients: No proc "
                                      & ASU.To_String (S));
                 Spawn_Client (ASU.To_String (S), "nick");
                 -- TODO Send name as Unbounded_String
@@ -134,7 +135,7 @@ package body SrvCtl is
                                      & ASU.To_String (S));
                 -- TODO remove
             end if;
-        end loop;
+        end loop Server_Loop;
     end;
 
     function Is_Srv_Dir (Dir_Ent : AD.Directory_Entry_Type) return Boolean is
@@ -169,6 +170,8 @@ package body SrvCtl is
                 Server_Name := ASU.To_Unbounded_String
                                    (AD.Simple_Name (Dir_Ent));
                 Server_List.Append (Server_Name);
+                Iictl.Verbose_Print ("Iictl: Scan_Server_Directory: found "
+                                     & ASU.To_String (Server_Name));
             end if;
         end loop;
         AD.End_Search (Search);
@@ -180,12 +183,16 @@ package body SrvCtl is
         Search : AD.Search_Type;
         Dir_Ent : AD.Directory_Entry_Type;
         Process_List : IV.Vector;
+        Server_Name : ASU.Unbounded_String;
     begin
         AD.Start_Search (Search, "/proc", "");
         while AD.More_Entries (Search) loop
             AD.Get_Next_Entry (Search, Dir_Ent);
             if Is_Ii_Proc (Dir_Ent) then
-                Process_List.Append (Get_Server_Name (Dir_Ent));
+                Server_Name := Get_Server_Name (Dir_Ent);
+                Iictl.Verbose_Print ("Iictl: Scan_Ii_Procs: Found "
+                                     & ASU.To_String (Server_Name));
+                Process_List.Append (Server_Name);
             end if;
         end loop;
         AD.End_Search (Search);
@@ -218,7 +225,7 @@ package body SrvCtl is
                 elsif ASU.Element (Cmdline, I - 2) /= 'i' then
                     ret := False;
                 else
-                    Iictl.Verbose_Print ("Iictl: Is_Ii_Proc found: "
+                    Iictl.Verbose_Print ("Iictl: Is_Ii_Proc: found "
                                           & ASU.To_String (Cmdline));
                     ret := True;
                 end if;
@@ -273,10 +280,12 @@ package body SrvCtl is
                 Ctrl_Last := ASU.Length (Cmdline);
             end if;
 
-            Ret := ASU.Unbounded_Slice (CmdLine, Flag_First + 3, Ctrl_Last);
+            Ret := ASU.Unbounded_Slice (CmdLine, Flag_First + 3, Ctrl_Last - 1);
         end if;
 
         ATIO.Close (File);
+        Iictl.Verbose_Print ("Iictl: Get_Server_Name: found name "
+                             & ASU.To_String (Ret));
         return Ret;
     end;
 end SrvCtl;
