@@ -11,6 +11,7 @@ package SrvCtl is
     procedure Spawn_Client (Srv_Name : in String; Nick : in String);
     procedure Respawn_Clients (Server_List : Iictl.Vectors.Vector;
                                Process_List : Iictl.Vectors.Vector);
+    procedure Reap_Defunct_Procs;
     function Is_Up
         (Srv_Path : in String) return Boolean;
     function Is_Srv_Dir

@@ -9,7 +9,8 @@ with Ada.Text_Io;
 with Iictl;
 with Posix.Io;
 with Posix.Process_Identification;
-with Posix.Unsafe_Process_Primitives;
+with Posix.Process_Primitives;
+with Posix.Unsafe_Process_Primitives; -- TODO is there safe fork?
 
 package body SrvCtl is
     package AD renames Ada.Directories;
@@ -20,6 +21,7 @@ package body SrvCtl is
     package IV renames Iictl.Vectors;
     package PIO renames Posix.Io;
     package PPI renames Posix.Process_Identification;
+    package PPP renames Posix.Process_Primitives;
     package PUPP renames Posix.Unsafe_Process_Primitives;
 
     use type ASU.Unbounded_String; -- TODO this is ugly
@@ -32,6 +34,7 @@ package body SrvCtl is
         Process_List : IV.Vector;
         -- TODO garbage collector?
     begin
+        Reap_Defunct_Procs;
         Server_List := Scan_Server_Directory (Irc_Dir);
         Process_List := Scan_Ii_Procs;
         Respawn_Clients (Server_List, Process_List);
@@ -83,9 +86,27 @@ package body SrvCtl is
         -- TODO check return or exception
 
         -- TODO keep track of PID?
-
-        -- TODO reap/kill dead defuncts/zombies
     end Spawn_Client;
+
+    procedure Reap_Defunct_Procs is
+        use type Posix.Error_Code;
+
+        Status : PPP.Termination_Status;
+    begin
+        PPP.Wait_For_Child_Process (Status => Status, Block => False);
+        -- TODO use more named parameters
+        Iictl.Verbose_Print ("Iictl: Reap_Defunct_Procs: Reaped one child");
+        -- TODO always print "Iictl: " in Verbose_Print
+
+        -- TODO reap ALL childs
+    exception
+        when Error : Posix.Posix_Error =>
+            if Posix.Get_Error_Code = Posix.No_Child_Process then
+                ATIO.Put_Line ("No child yet!");
+            else
+                raise Posix.Posix_Error with Exception_Message (Error);
+            end if;
+    end;
 
     function Is_Up (Srv_Path : String) Return Boolean is
         -- TODO take Posix_String?
@@ -205,8 +226,6 @@ package body SrvCtl is
         Cmdline : ASU.Unbounded_String;
         Ret : Boolean := False;
     begin
-        -- TODO handle defunct procs
-
         if not Iictl.Is_Integral (Dir_Name) then
             return False;
         end if;
