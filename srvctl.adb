@@ -143,7 +143,6 @@ package body SrvCtl is
 
         Name : String := AD.Simple_Name (Dir_Ent);
     begin
-
         if AD.Kind (Dir_Ent) /= AD.Directory then
             return False;
         elsif Name (Name'First) = '.' then
@@ -206,6 +205,8 @@ package body SrvCtl is
         Cmdline : ASU.Unbounded_String;
         Ret : Boolean := False;
     begin
+        -- TODO handle defunct procs
+
         if not Iictl.Is_Integral (Dir_Name) then
             return False;
         end if;
