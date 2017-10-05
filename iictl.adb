@@ -54,6 +54,7 @@ package body Iictl is
             -- TODO ChCtl.Rejoin_Channels;
             -- TODO SrvCtl.Detect_Quits;
             -- TODO ChCtl.Detect_Parts;
+            delay 1.0; -- TODO remove? speed up?
         end loop;
     end Iictl;
 

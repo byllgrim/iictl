@@ -93,16 +93,21 @@ package body SrvCtl is
 
         Status : PPP.Termination_Status;
     begin
-        PPP.Wait_For_Child_Process (Status => Status, Block => False);
-        -- TODO use more named parameters
-        Iictl.Verbose_Print ("Iictl: Reap_Defunct_Procs: Reaped one child");
-        -- TODO always print "Iictl: " in Verbose_Print
+        loop -- TODO upper limit
+            PPP.Wait_For_Child_Process (Status => Status, Block => False);
+            -- TODO use more named parameters
 
-        -- TODO reap ALL childs
+            --if Status = didnotreap then
+            if not PPP.Status_Available (Status) then
+                exit;
+            end if;
+
+            Iictl.Verbose_Print ("Iictl: Reap_Defunct_Procs: Reaped one child");
+        end loop;
     exception
         when Error : Posix.Posix_Error =>
             if Posix.Get_Error_Code = Posix.No_Child_Process then
-                ATIO.Put_Line ("No child yet!");
+                ATIO.Put_Line ("No child yet!"); -- TODO clean this
             else
                 raise Posix.Posix_Error with Exception_Message (Error);
             end if;
