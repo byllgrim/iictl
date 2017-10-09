@@ -3,7 +3,8 @@ with Ada.Command_Line;
 with Ada.Directories;
 with Ada.Strings.Unbounded;
 with Ada.Text_Io;
-With SrvCtl;
+with ChCtl;
+with SrvCtl;
 
 package body Iictl is
     package ACL renames Ada.Command_Line;
@@ -51,7 +52,9 @@ package body Iictl is
 
         loop
             SrvCtl.Reconnect_Servers (Irc_Dir, ASU.To_String (Nick));
-            -- TODO ChCtl.Rejoin_Channels;
+                -- TODO rename Server_Reconnection, Connection_Ctrl, ...
+            ChCtl.Rejoin_Channels;
+                -- TODO rename Rejoin_Ctl or something
             -- TODO SrvCtl.Detect_Quits;
             -- TODO ChCtl.Detect_Parts;
             delay 1.0; -- TODO remove? speed up?
