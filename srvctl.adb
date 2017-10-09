@@ -23,6 +23,7 @@ package body SrvCtl is
     package PPI renames Posix.Process_Identification;
     package PPP renames Posix.Process_Primitives;
     package PUPP renames Posix.Unsafe_Process_Primitives;
+    -- TODO remove unused packages
 
     use type ASU.Unbounded_String; -- TODO this is ugly
     package Vector_Pkg is new Ada.Containers.Vectors
@@ -48,7 +49,7 @@ package body SrvCtl is
 
         Srv_Path : String := AD.Full_Name (Dir_Ent); -- TODO simple_name
     begin
-        if not Is_Fifo_Up (Srv_Path) then
+        if not Iictl.Is_Fifo_Up (Srv_Path) then
             Spawn_Client (AD.Simple_Name (Dir_Ent), Nick);
         else
             ATIO.Put_Line (Srv_Path & " is running"); -- TODO remove
@@ -112,34 +113,6 @@ package body SrvCtl is
                 raise Posix.Posix_Error with Exception_Message (Error);
             end if;
     end;
-
-    function Is_Fifo_Up (Srv_Path : String) Return Boolean is
-        -- TODO take Posix_String?
-        use type Posix.Error_Code;
-
-        In_Path : Posix.Posix_String
-                := Posix.To_Posix_String (Srv_Path & "/in");
-        Fd : PIO.File_Descriptor;
-    begin
-        -- It's up if it's possible to open wronly without error
-
-        -- TODO Is_Pathname ()?
-
-        -- TODO check ps environ TODO relying on FIFO is stupid: Check PIDs
-
-        Fd := PIO.Open (In_Path, PIO.Write_Only, PIO.Non_Blocking);
-
-        -- TODO Close
-        return True;
-    exception
-        when Error : Posix.Posix_Error =>
-            if Posix.Get_Error_Code = Posix.Enxio then
-                return False; -- Fifo is down
-            else
-                raise Posix.Posix_Error with Exception_Message (Error);
-                -- TODO better solution
-            end if;
-    end Is_Fifo_Up;
 
     procedure Respawn_Clients (Server_List : IV.Vector;
                                Process_List : IV.Vector)
