@@ -48,7 +48,7 @@ package body SrvCtl is
 
         Srv_Path : String := AD.Full_Name (Dir_Ent); -- TODO simple_name
     begin
-        if not Is_Up (Srv_Path) then
+        if not Is_Fifo_Up (Srv_Path) then
             Spawn_Client (AD.Simple_Name (Dir_Ent), Nick);
         else
             ATIO.Put_Line (Srv_Path & " is running"); -- TODO remove
@@ -113,7 +113,7 @@ package body SrvCtl is
             end if;
     end;
 
-    function Is_Up (Srv_Path : String) Return Boolean is
+    function Is_Fifo_Up (Srv_Path : String) Return Boolean is
         -- TODO take Posix_String?
         use type Posix.Error_Code;
 
@@ -122,8 +122,6 @@ package body SrvCtl is
         Fd : PIO.File_Descriptor;
     begin
         -- It's up if it's possible to open wronly without error
-
-        -- TODO rename Is_Fifo_Up or something
 
         -- TODO Is_Pathname ()?
 
@@ -141,7 +139,7 @@ package body SrvCtl is
                 raise Posix.Posix_Error with Exception_Message (Error);
                 -- TODO better solution
             end if;
-    end Is_Up;
+    end Is_Fifo_Up;
 
     procedure Respawn_Clients (Server_List : IV.Vector;
                                Process_List : IV.Vector)

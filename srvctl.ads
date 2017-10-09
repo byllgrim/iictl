@@ -12,7 +12,7 @@ package SrvCtl is
     procedure Respawn_Clients (Server_List : Iictl.Vectors.Vector;
                                Process_List : Iictl.Vectors.Vector);
     procedure Reap_Defunct_Procs;
-    function Is_Up
+    function Is_Fifo_Up
         (Srv_Path : in String) return Boolean;
     function Is_Srv_Dir
         (Dir_Ent : in Ada.Directories.Directory_Entry_Type) return Boolean;
