@@ -42,15 +42,19 @@ package body Iictl is
         exception
             when CONSTRAINT_ERROR =>
                 ATIO.Put_Line ("usage: " & ACL.Command_Name
-                               & " [-v]" & " [-n nick]");
+                               & " [-v]" & " <-n nick>");
             return;
         end;
         end loop;
 
         -- TODO set file offset to end of channel outs?
 
-        Verbose_Print ("Iictl: Nick is '"
-                       & ASU.To_String(Nick) & "'"); -- TODO if nick length
+        if ASU.Length (Nick) = 0 then
+            ATIO.Put_Line ("No nick given");
+            -- TODO Print_Usage;
+            return;
+        end if;
+
         Verbose_Print ("Iictl: started");
 
         loop
