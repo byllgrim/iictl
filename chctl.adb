@@ -14,17 +14,23 @@ package body ChCtl is
 
         while AD.More_Entries (Search) loop
             AD.Get_Next_Entry (Search, Dir_Ent);
-
-            Scan_Server (AD.Full_Name (Dir_Ent));
+            Scan_Server (Dir_Ent);
         end loop;
 
         AD.End_Search (Search);
     end Rejoin_Channels;
 
-    procedure Scan_Server (Srv_Path : String) is
+    procedure Scan_Server (Dir_Ent : AD.Directory_Entry_Type) is
         -- TODO rename Scan_Server_Channels?
+
+        Srv_Path : String := AD.Full_Name (Dir_Ent);
+        Srv_Name : String := AD.Simple_Name (Dir_Ent);
     begin
-        Iictl.Verbose_Print ("Iictl: Scan_Server: Scanning " & Srv_Path);
+        if Srv_Name(Srv_Name'First) = '.' then
+            return;
+        end if;
+
+        Iictl.Verbose_Print ("Iictl: Scan_Server: Scanning " & Srv_Name);
         -- TODO for channel in server
             -- TODO rejoin if fifo "in" is down?
     end Scan_Server;
