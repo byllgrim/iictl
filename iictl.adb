@@ -60,7 +60,7 @@ package body Iictl is
         loop
             SrvCtl.Reconnect_Servers (Irc_Dir, ASU.To_String (Nick));
                 -- TODO rename Server_Reconnection, Connection_Ctrl, ...
-            ChCtl.Rejoin_Channels;
+            ChCtl.Rejoin_Channels (Irc_Dir);
                 -- TODO rename Rejoin_Ctl or something
             -- TODO SrvCtl.Detect_Quits;
             -- TODO ChCtl.Detect_Parts;
