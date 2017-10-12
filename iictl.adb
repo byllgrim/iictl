@@ -68,7 +68,7 @@ package body Iictl is
         end loop;
     end Iictl;
 
-    procedure Verbose_Print (Msg : String) is -- TODO rename
+    procedure Verbose_Print (Msg : String) is -- TODO rename Debug_Print?
     begin
         if Verbose then
             -- TODO prepend with "Iictl: "?
@@ -78,6 +78,9 @@ package body Iictl is
     end Verbose_Print;
 
     function Is_Fifo_Up (Srv_Path : String) Return Boolean is
+        -- TODO rename Is_Fifo_Up as Is_In_Fifo_Up?
+        -- TODO rename Srv_Path as Dir_Path?
+
         -- TODO take Posix_String?
         use type Posix.Error_Code;
 
@@ -103,6 +106,7 @@ package body Iictl is
                 raise Posix.Posix_Error with Exception_Message (Error);
                 -- TODO better solution
             end if;
+            -- TODO NO_SUCH_FILE_OR_DIRECTORY => return False;
     end Is_Fifo_Up;
 
     function Is_Integral (Text : String) return Boolean is
