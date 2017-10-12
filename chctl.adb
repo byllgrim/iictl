@@ -37,12 +37,14 @@ package body ChCtl is
         AD.Start_Search (Search, Srv_Path, "");
         while AD.More_Entries (Search) loop
             AD.Get_Next_Entry (Search, Ch_Dir);
-            Maintain_Channel_Connection (Ch_Dir);
+            Maintain_Channel_Connection (Srv_Dir, Ch_Dir);
         end loop;
         AD.End_Search (Search);
     end Scan_Server;
 
-    procedure Maintain_Channel_Connection (Ch_Dir : AD.Directory_Entry_Type) is
+    procedure Maintain_Channel_Connection
+        (Srv_Dir : AD.Directory_Entry_Type; Ch_Dir : AD.Directory_Entry_Type)
+    is
         Ch_Path : String := AD.Full_Name (Ch_Dir); -- TODO unused?
         Ch_Name : String := AD.Simple_Name (Ch_Dir);
     begin
@@ -54,14 +56,22 @@ package body ChCtl is
         end if;
 
         if not Iictl.Is_Fifo_Up (AD.Full_Name (Ch_Dir)) then
-            Rejoin_Channel (Ch_Dir);
+            Rejoin_Channel (Srv_Dir, Ch_Dir);
         end if;
     end Maintain_Channel_Connection;
 
-    procedure Rejoin_Channel (Ch_Dir : AD.Directory_Entry_Type) is
+    procedure Rejoin_Channel
+        (Srv_Dir : AD.Directory_Entry_Type; Ch_Dir : AD.Directory_Entry_Type)
+    is
+        Srv_Path : String := AD.Full_Name (Srv_Dir);
+        Ch_Name : String := AD.Simple_Name (Ch_Dir);
+        Srv_In : ATIO.File_Type;
     begin
         Iictl.Verbose_Print ("Iictl: Rejoin_Channel: Rejoining "
                              & AD.Simple_Name (Ch_Dir));
-        -- TODO implement
+
+        ATIO.Open (Srv_In, ATIO.Out_File, Srv_Path & "/in");
+        ATIO.Put_Line (Srv_In, "/join " & Ch_Name);
+        ATIO.Close (Srv_In);
     end Rejoin_Channel;
 end ChCtl;
