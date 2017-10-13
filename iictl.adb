@@ -6,7 +6,7 @@ with Ada.Strings.Unbounded;
 with Ada.Text_Io;
 with ChCtl;
 with Posix.Io;
-with SrvCtl;
+with Srv_Conn;
 
 package body Iictl is
     package ACL renames Ada.Command_Line;
@@ -58,11 +58,11 @@ package body Iictl is
         Verbose_Print ("Iictl: started");
 
         loop
-            SrvCtl.Reconnect_Servers (Irc_Dir, ASU.To_String (Nick));
+            Srv_Conn.Reconnect_Servers (Irc_Dir, ASU.To_String (Nick));
                 -- TODO rename Server_Reconnection, Connection_Ctrl, ...
             ChCtl.Rejoin_Channels (Irc_Dir);
                 -- TODO rename Rejoin_Ctl or something
-            -- TODO SrvCtl.Detect_Quits;
+            -- TODO Srv_Conn.Detect_Quits;
             -- TODO ChCtl.Detect_Parts;
             delay 1.0; -- TODO remove? speed up?
         end loop;

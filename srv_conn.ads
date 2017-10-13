@@ -3,7 +3,7 @@ with Ada.Strings.Unbounded;
 with Iictl;
 with Posix;
 
-package SrvCtl is
+package Srv_Conn is
     procedure Reconnect_Servers (Irc_Dir : in String; Nick : in String);
     procedure Maintain_Connection
         (Dir_Ent : in Ada.Directories.Directory_Entry_Type;
@@ -23,4 +23,4 @@ package SrvCtl is
         return Boolean;
     function Get_Server_Name (Dir_Ent : Ada.Directories.Directory_Entry_Type)
         return Ada.Strings.Unbounded.Unbounded_String;
-end SrvCtl;
+end Srv_Conn;

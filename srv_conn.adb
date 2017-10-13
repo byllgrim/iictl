@@ -12,7 +12,7 @@ with Posix.Process_Identification;
 with Posix.Process_Primitives;
 with Posix.Unsafe_Process_Primitives; -- TODO is there safe fork?
 
-package body SrvCtl is
+package body Srv_Conn is
     package AD renames Ada.Directories;
     package AS renames Ada.Strings;
     package ASMC renames Ada.Strings.Maps.Constants;
@@ -284,4 +284,4 @@ package body SrvCtl is
                              & ASU.To_String (Ret));
         return Ret;
     end;
-end SrvCtl;
+end Srv_Conn;
