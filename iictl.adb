@@ -7,6 +7,7 @@ with Ada.Text_Io;
 with Ch_Conn;
 with Posix.Io;
 with Srv_Conn;
+with Srv_Quit;
 
 package body Iictl is
     package ACL renames Ada.Command_Line;
@@ -62,7 +63,8 @@ package body Iictl is
                 -- TODO rename Server_Reconnection, Connection_Ctrl, ...
             Ch_Conn.Rejoin_Channels (Irc_Dir);
                 -- TODO rename Rejoin_Ctl or something
-            -- TODO Srv_Conn.Detect_Quits;
+            Srv_Quit.Detect_Quits (Irc_Dir);
+                -- TODO make Irc_Dir accessible from e.g. Iictl?
             -- TODO Ch_Conn.Detect_Parts;
             delay 1.0; -- TODO remove? speed up?
         end loop;
