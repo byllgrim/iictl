@@ -2,7 +2,7 @@ with Ada.Directories;
 with Ada.Text_Io; -- TODO unecessary?
 with Iictl;
 
-package body ChCtl is
+package body Ch_Conn is
     package AD renames Ada.Directories;
     package ATIO renames Ada.Text_Io;
 
@@ -74,4 +74,4 @@ package body ChCtl is
         ATIO.Put_Line (Srv_In, "/join " & Ch_Name);
         ATIO.Close (Srv_In);
     end Rejoin_Channel;
-end ChCtl;
+end Ch_Conn;

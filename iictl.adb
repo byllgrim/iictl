@@ -4,7 +4,7 @@ with Ada.Directories;
 with Ada.Exceptions; use Ada.Exceptions; -- TODO remove
 with Ada.Strings.Unbounded;
 with Ada.Text_Io;
-with ChCtl;
+with Ch_Conn;
 with Posix.Io;
 with Srv_Conn;
 
@@ -60,10 +60,10 @@ package body Iictl is
         loop
             Srv_Conn.Reconnect_Servers (Irc_Dir, ASU.To_String (Nick));
                 -- TODO rename Server_Reconnection, Connection_Ctrl, ...
-            ChCtl.Rejoin_Channels (Irc_Dir);
+            Ch_Conn.Rejoin_Channels (Irc_Dir);
                 -- TODO rename Rejoin_Ctl or something
             -- TODO Srv_Conn.Detect_Quits;
-            -- TODO ChCtl.Detect_Parts;
+            -- TODO Ch_Conn.Detect_Parts;
             delay 1.0; -- TODO remove? speed up?
         end loop;
     end Iictl;
