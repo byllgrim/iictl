@@ -6,6 +6,8 @@ with Ada.Strings.Unbounded;
 with Ada.Text_Io;
 with Ch_Conn;
 with Posix.Io;
+with Posix.Process_Identification;
+with Posix.User_Database;
 with Srv_Conn;
 with Srv_Quit;
 
@@ -14,13 +16,15 @@ package body Iictl is
     package ASU renames Ada.Strings.Unbounded;
     package ATIO renames Ada.Text_Io;
     package PIO renames Posix.Io;
+    package PPI renames Posix.Process_Identification;
+    package PUD renames Posix.User_Database;
 
     Verbose : Boolean := False; -- TODO make private or something
 
     procedure Iictl is
         I : Integer := 1;
-        Irc_Dir : String := Ada.Directories.Current_Directory;
-            -- TODO different directories for different servers
+        Irc_Dir : ASU.Unbounded_String := Default_Irc_Dir;
+            -- TODO different directories for different servers?
         Nick : ASU.Unbounded_String;
     begin
         -- TODO same opts as ii?
@@ -35,6 +39,9 @@ package body Iictl is
             elsif ACL.Argument (I) = "-v" then -- TODO use case
                 Verbose := True;
                 Verbose_Print ("Iictl: Verbose printing on");
+            elsif ACL.Argument (I) = "-i" then
+                I := I + 1;
+                Irc_Dir := ASU.To_Unbounded_String (ACL.Argument (I));
             else
                 raise CONSTRAINT_ERROR; -- TODO different exception
             end if;
@@ -57,13 +64,16 @@ package body Iictl is
         end if;
 
         Verbose_Print ("Iictl: started");
+        Verbose_Print ("Nick = " & ASU.To_String (Nick));
+        Verbose_Print ("Irc_Dir = " & ASU.To_String (Irc_Dir));
 
         loop
-            Srv_Conn.Reconnect_Servers (Irc_Dir, ASU.To_String (Nick));
+            Srv_Conn.Reconnect_Servers (ASU.To_String (Irc_Dir),
+                                        ASU.To_String (Nick));
                 -- TODO rename Server_Reconnection, Connection_Ctrl, ...
-            Ch_Conn.Rejoin_Channels (Irc_Dir);
+            Ch_Conn.Rejoin_Channels (ASU.To_String (Irc_Dir));
                 -- TODO rename Rejoin_Ctl or something
-            Srv_Quit.Detect_Quits (Irc_Dir);
+            Srv_Quit.Detect_Quits (ASU.To_String (Irc_Dir));
                 -- TODO make Irc_Dir accessible from e.g. Iictl?
             -- TODO Ch_Conn.Detect_Parts;
             delay 1.0; -- TODO remove? speed up?
@@ -120,4 +130,21 @@ package body Iictl is
         when others =>
             return False;
     end;
+
+    function Default_Irc_Dir return ASU.Unbounded_String is
+        Uid : PPI.User_Id;
+        Db_Item : PUD.User_Database_Item;
+        -- TODO Home_Dir : Posix.Posix_String
+        Home_Dir : ASU.Unbounded_String;
+    begin
+        Uid := PPI.Get_Effective_User_ID;
+        Db_Item := PUD.Get_User_Database_Item (Uid);
+        --Home_Dir := PUD.Initial_Directory_Of (Db_Item);
+        Home_Dir := ASU.To_Unbounded_String (
+                        Posix.To_String (
+                            PUD.Initial_Directory_Of (Db_Item)));
+
+        --return ASU.To_Unbounded_String (Posix.To_String (Home_Dir) & "/irc");
+        return Home_Dir & ASU.To_Unbounded_String ("/irc");
+    end Default_Irc_Dir;
 end Iictl;

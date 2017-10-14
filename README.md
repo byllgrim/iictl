@@ -18,8 +18,9 @@ Florist (a posix library) TODO link.
 Use the `Makefile`.
 
 ## Usage
-Run `iictl` inside `ii`'s `irc` directory.
+If `ii`s directory (e.g. `~/irc`) exist and is populated, just run `iictl`
+from anywhere.
 
-You don't have to run `ii` if the directory already exist and is populated.
+Otherwise, run `ii` first (or create and populate the directory manually).
 
 TODO man page?

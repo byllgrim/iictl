@@ -158,7 +158,7 @@ package body Srv_Conn is
         Server_Name : ASU.Unbounded_String;
         Server_List : IV.Vector;
     begin
-        AD.Start_Search (Search, Irc_Dir, ""); -- TODO get dir from proc or cwd
+        AD.Start_Search (Search, Irc_Dir, "");
         while AD.More_Entries (Search) loop
             AD.Get_Next_Entry (Search, Dir_Ent);
 
