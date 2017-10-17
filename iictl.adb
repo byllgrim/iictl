@@ -20,40 +20,13 @@ package body Iictl is
     package PUD renames Posix.User_Database;
 
     Verbose : Boolean := False; -- TODO make private or something
+    Irc_Dir : ASU.Unbounded_String;
+        -- TODO different directories for different servers?
+    Nick : ASU.Unbounded_String;
 
     procedure Iictl is
-        I : Integer := 1;
-        Irc_Dir : ASU.Unbounded_String := Default_Irc_Dir;
-            -- TODO different directories for different servers?
-        Nick : ASU.Unbounded_String;
     begin
-        -- TODO same opts as ii?
-
-        -- TODO refactor to separate subprogram TODO move to Main
-        -- TODO initialize I more locally
-        while I <= ACL.Argument_Count loop
-        begin
-            if ACL.Argument (I) = "-n" then
-                I := I + 1;
-                Nick := ASU.To_Unbounded_String (ACL.Argument (I));
-            elsif ACL.Argument (I) = "-v" then -- TODO use case
-                Verbose := True;
-                Verbose_Print ("Iictl: Verbose printing on");
-            elsif ACL.Argument (I) = "-i" then
-                I := I + 1;
-                Irc_Dir := ASU.To_Unbounded_String (ACL.Argument (I));
-            else
-                raise CONSTRAINT_ERROR; -- TODO different exception
-            end if;
-
-            I := I + 1;
-        exception
-            when CONSTRAINT_ERROR =>
-                ATIO.Put_Line ("usage: " & ACL.Command_Name
-                               & " [-v]" & " <-n nick>");
-            return;
-        end;
-        end loop;
+        Parse_Options;
 
         -- TODO set file offset to end of channel outs?
 
@@ -88,6 +61,40 @@ package body Iictl is
             -- TODO print to stderr?
         end if;
     end Verbose_Print;
+
+    procedure Parse_Options is
+        I : Integer := 1;
+    begin
+        Irc_Dir := Default_Irc_Dir;
+
+        -- TODO same opts as ii?
+
+        -- TODO refactor to separate subprogram TODO move to Main
+        -- TODO initialize I more locally
+        while I <= ACL.Argument_Count loop
+        begin
+            if ACL.Argument (I) = "-n" then
+                I := I + 1;
+                Nick := ASU.To_Unbounded_String (ACL.Argument (I));
+            elsif ACL.Argument (I) = "-v" then -- TODO use case
+                Verbose := True;
+                Verbose_Print ("Iictl: Verbose printing on");
+            elsif ACL.Argument (I) = "-i" then
+                I := I + 1;
+                Irc_Dir := ASU.To_Unbounded_String (ACL.Argument (I));
+            else
+                raise CONSTRAINT_ERROR; -- TODO different exception
+            end if;
+
+            I := I + 1;
+        exception
+            when CONSTRAINT_ERROR =>
+                ATIO.Put_Line ("usage: " & ACL.Command_Name
+                               & " [-v]" & " <-n nick>");
+            return;
+        end;
+        end loop;
+    end Parse_Options;
 
     function Is_Fifo_Up (Srv_Path : String) Return Boolean is
         -- TODO rename Is_Fifo_Up as Is_In_Fifo_Up?

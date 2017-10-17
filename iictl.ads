@@ -9,6 +9,7 @@ package Iictl is
 
     procedure Iictl;
     procedure Verbose_Print (Msg : String);
+    procedure Parse_Options;
     function Is_Fifo_Up
         (Srv_Path : in String) return Boolean;
     function Is_Integral (Text : String) return Boolean; -- TODO package util?
