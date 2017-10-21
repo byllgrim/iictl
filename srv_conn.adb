@@ -52,7 +52,8 @@ package body Srv_Conn is
         if not Iictl.Is_Fifo_Up (Srv_Path) then
             Spawn_Client (AD.Simple_Name (Dir_Ent), Nick);
         else
-            ATIO.Put_Line (Srv_Path & " is running"); -- TODO remove
+            Iictl.Verbose_Print ("Iictl: Maintain_Connection: "
+                                 & Srv_Path & " is running"); -- TODO remove
             -- TODO someone COULD be cat'ing the in file
         end if;
     end Maintain_Connection;
@@ -108,7 +109,8 @@ package body Srv_Conn is
     exception
         when Error : Posix.Posix_Error =>
             if Posix.Get_Error_Code = Posix.No_Child_Process then
-                ATIO.Put_Line ("No child yet!"); -- TODO clean this
+                Iictl.Verbose_Print ("Iictl: Reap_Defunct_Procs: "
+                                     & "No child yet!"); -- TODO clean this
             else
                 raise Posix.Posix_Error with Exception_Message (Error);
             end if;
