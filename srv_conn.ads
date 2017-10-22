@@ -10,15 +10,15 @@ package Srv_Conn is
         (Dir_Ent : in Ada.Directories.Directory_Entry_Type;
          Nick : in String);
     procedure Spawn_Client (Srv_Name : in String; Nick : in String);
-    procedure Respawn_Clients (Server_List : Iictl.String_Vectors.Vector;
-                               Process_List : Iictl.String_Vectors.Vector);
+    procedure Respawn_Clients (Server_List : Iictl.Unbounded_String_Vector;
+                               Process_List : Iictl.Unbounded_String_Vector);
     procedure Reap_Defunct_Procs;
     function Is_Srv_Dir
         (Dir_Ent : in Ada.Directories.Directory_Entry_Type) return Boolean;
     -- TODO use private?
     function Scan_Server_Directory (Irc_Dir : in String)
-        return Iictl.String_Vectors.Vector;
-    function Scan_Ii_Procs return Iictl.String_Vectors.Vector;
+        return Iictl.Unbounded_String_Vector;
+    function Scan_Ii_Procs return Iictl.Unbounded_String_Vector;
     -- TODO sort
     function Is_Ii_Proc (Dir_Ent : in Ada.Directories.Directory_Entry_Type)
         return Boolean;

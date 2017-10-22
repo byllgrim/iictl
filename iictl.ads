@@ -3,10 +3,14 @@ with Ada.Strings.Unbounded;
 
 package Iictl is
     use type Ada.Strings.Unbounded.Unbounded_String;
-    package String_Vectors is new Ada.Containers.Vectors
+    package Unbounded_String_Vectors is new Ada.Containers.Vectors
         (Element_Type => Ada.Strings.Unbounded.Unbounded_String,
          Index_Type => Natural);
-    -- TODO rename spesific to the strings being used?
+    type Unbounded_String_Vector is new Unbounded_String_Vectors.Vector with
+    record
+      null;
+    end record;
+    -- TODO use a null record
 
     procedure Iictl;
     procedure Verbose_Print (Msg : String);
