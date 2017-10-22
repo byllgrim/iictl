@@ -49,12 +49,14 @@ package body Iictl is
             Srv_Quit.Detect_Quits (ASU.To_String (Irc_Dir));
                 -- TODO make Irc_Dir accessible from e.g. Iictl?
             -- TODO Ch_Conn.Detect_Parts;
-            delay 1.0; -- TODO remove? speed up?
+            Delay 1.0; -- TODO remove? speed up? ravenclaw!
         end loop;
     end Iictl;
 
     procedure Verbose_Print (Msg : String) is -- TODO rename Debug_Print?
     begin
+        -- TODO define type for severity?
+
         if Verbose then
             -- TODO prepend with "Iictl: "?
             ATIO.Put_Line (Msg);
