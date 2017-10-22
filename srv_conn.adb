@@ -1,5 +1,4 @@
 -- See LICENSE file for cc0 license details
-with Ada.Containers.Vectors;
 with Ada.Directories;
 with Ada.Exceptions; use Ada.Exceptions; -- TODO remove
 with Ada.Strings;
@@ -18,21 +17,17 @@ package body Srv_Conn is
     package ASMC renames Ada.Strings.Maps.Constants;
     package ASU renames Ada.Strings.Unbounded; -- TODO unneeded?
     package ATIO renames Ada.Text_Io;
-    package IV renames Iictl.Vectors;
+    package ISV renames Iictl.String_Vectors;
     package PIO renames Posix.Io;
     package PPI renames Posix.Process_Identification;
     package PPP renames Posix.Process_Primitives;
     package PUPP renames Posix.Unsafe_Process_Primitives;
     -- TODO remove unused packages
 
-    use type ASU.Unbounded_String; -- TODO this is ugly
-    package Vector_Pkg is new Ada.Containers.Vectors
-        (Natural, ASU.Unbounded_String);
-
     -- TODO explicit in?
     procedure Reconnect_Servers (Irc_Dir : String; Nick : String) is
-        Server_List : IV.Vector; -- TODO rename Directory_List?
-        Process_List : IV.Vector;
+        Server_List : ISV.Vector; -- TODO rename Directory_List?
+        Process_List : ISV.Vector;
         -- TODO garbage collector?
     begin
         Reap_Defunct_Procs;
@@ -116,14 +111,14 @@ package body Srv_Conn is
             end if;
     end;
 
-    procedure Respawn_Clients (Server_List : IV.Vector;
-                               Process_List : IV.Vector)
+    procedure Respawn_Clients (Server_List : ISV.Vector;
+                               Process_List : ISV.Vector)
     is
     begin
         -- TODO use iterator in other functions as well
         Server_Loop:
         for S of Server_List loop
-            if Process_List.Find_Index (S) = IV.No_Index then
+            if Process_List.Find_Index (S) = ISV.No_Index then
                 Iictl.Verbose_Print ("Iictl: Respawn_Clients: No proc "
                                      & ASU.To_String (S));
                 Spawn_Client (ASU.To_String (S), "nick");
@@ -153,12 +148,12 @@ package body Srv_Conn is
     end Is_Srv_Dir;
 
     function Scan_Server_Directory (Irc_Dir : in String)
-        return IV.Vector
+        return ISV.Vector
     is
         Search : AD.Search_Type;
         Dir_Ent : AD.Directory_Entry_Type;
         Server_Name : ASU.Unbounded_String;
-        Server_List : IV.Vector;
+        Server_List : ISV.Vector;
     begin
         AD.Start_Search (Search, Irc_Dir, "");
         while AD.More_Entries (Search) loop
@@ -177,10 +172,10 @@ package body Srv_Conn is
         return Server_List;
     end;
 
-    function Scan_Ii_Procs return IV.Vector is
+    function Scan_Ii_Procs return ISV.Vector is
         Search : AD.Search_Type;
         Dir_Ent : AD.Directory_Entry_Type;
-        Process_List : IV.Vector;
+        Process_List : ISV.Vector;
         Server_Name : ASU.Unbounded_String;
     begin
         AD.Start_Search (Search, "/proc", "");
