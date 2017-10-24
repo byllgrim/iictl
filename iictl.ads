@@ -6,11 +6,8 @@ package Iictl is
     package Unbounded_String_Vectors is new Ada.Containers.Vectors
         (Element_Type => Ada.Strings.Unbounded.Unbounded_String,
          Index_Type => Natural);
-    type Unbounded_String_Vector is new Unbounded_String_Vectors.Vector with
-    record
-      null;
-    end record;
-    -- TODO use a null record
+    type Unbounded_String_Vector is new Unbounded_String_Vectors.Vector
+        with null record;
 
     procedure Iictl;
     procedure Verbose_Print (Msg : String);

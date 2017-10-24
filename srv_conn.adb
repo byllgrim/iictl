@@ -120,6 +120,7 @@ package body Srv_Conn is
         Server_Loop:
         for S of Server_List loop
             if Process_List.Find_Index (S) = IUSV.No_Index then
+                -- TODO find another way to use No_Index
                 Iictl.Verbose_Print ("Iictl: Respawn_Clients: No proc "
                                      & ASU.To_String (S));
                 Spawn_Client (ASU.To_String (S), "nick");
