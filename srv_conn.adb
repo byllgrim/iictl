@@ -5,11 +5,12 @@ with Ada.Strings;
 with Ada.Strings.Maps.Constants;
 with Ada.Strings.Unbounded; -- TODO needed?
 with Ada.Text_Io;
-with Iictl;
+with Iictl; -- TODO unecessary?
 with Posix.Io;
 with Posix.Process_Identification;
 with Posix.Process_Primitives;
 with Posix.Unsafe_Process_Primitives; -- TODO is there safe fork?
+with util;
 
 package body Srv_Conn is
     package AD renames Ada.Directories;
@@ -17,7 +18,7 @@ package body Srv_Conn is
     package ASMC renames Ada.Strings.Maps.Constants;
     package ASU renames Ada.Strings.Unbounded; -- TODO unneeded?
     package ATIO renames Ada.Text_Io;
-    package IUSV renames Iictl.Unbounded_String_Vectors;
+    package IUSV renames Util.Unbounded_String_Vectors;
     package PIO renames Posix.Io;
     package PPI renames Posix.Process_Identification;
     package PPP renames Posix.Process_Primitives;
@@ -26,9 +27,9 @@ package body Srv_Conn is
 
     -- TODO explicit in?
     procedure Reconnect_Servers (Irc_Dir : String; Nick : String) is
-        Server_List : Iictl.Unbounded_String_Vector;
+        Server_List : Util.Unbounded_String_Vector;
             -- TODO rename Directory_List?
-        Process_List : Iictl.Unbounded_String_Vector;
+        Process_List : Util.Unbounded_String_Vector;
         -- TODO garbage collector?
     begin
         Reap_Defunct_Procs;
@@ -45,10 +46,10 @@ package body Srv_Conn is
 
         Srv_Path : String := AD.Full_Name (Dir_Ent); -- TODO simple_name
     begin
-        if not Iictl.Is_Fifo_Up (Srv_Path) then
+        if not Util.Is_Fifo_Up (Srv_Path) then
             Spawn_Client (AD.Simple_Name (Dir_Ent), Nick);
         else
-            Iictl.Verbose_Print ("Iictl: Maintain_Connection: "
+            Util.Verbose_Print ("Iictl: Maintain_Connection: "
                                  & Srv_Path & " is running"); -- TODO remove
             -- TODO someone COULD be cat'ing the in file
         end if;
@@ -65,7 +66,7 @@ package body Srv_Conn is
         -- TODO check if Nick is given
 
         if PUPP.Fork = PPI.Null_Process_Id then -- New process
-            Iictl.Verbose_Print ("Iictl: Spawn_Client: " & Srv_Name);
+            Util.Verbose_Print ("Iictl: Spawn_Client: " & Srv_Name);
 
             Posix.Append (Argv, Cmd);
             Posix.Append (Argv, "-s");
@@ -100,20 +101,20 @@ package body Srv_Conn is
                 exit;
             end if;
 
-            Iictl.Verbose_Print ("Iictl: Reap_Defunct_Procs: Reaped one child");
+            Util.Verbose_Print ("Iictl: Reap_Defunct_Procs: Reaped one child");
         end loop;
     exception
         when Error : Posix.Posix_Error =>
             if Posix.Get_Error_Code = Posix.No_Child_Process then
-                Iictl.Verbose_Print ("Iictl: Reap_Defunct_Procs: "
+                Util.Verbose_Print ("Iictl: Reap_Defunct_Procs: "
                                      & "No childs yet!"); -- TODO clean this
             else
                 raise Posix.Posix_Error with Exception_Message (Error);
             end if;
     end;
 
-    procedure Respawn_Clients (Server_List : Iictl.Unbounded_String_Vector;
-                               Process_List : Iictl.Unbounded_String_Vector)
+    procedure Respawn_Clients (Server_List : Util.Unbounded_String_Vector;
+                               Process_List : Util.Unbounded_String_Vector)
     is
     begin
         -- TODO use iterator in other functions as well
@@ -121,13 +122,13 @@ package body Srv_Conn is
         for S of Server_List loop
             if Process_List.Find_Index (S) = IUSV.No_Index then
                 -- TODO find another way to use No_Index
-                Iictl.Verbose_Print ("Iictl: Respawn_Clients: No proc "
+                Util.Verbose_Print ("Iictl: Respawn_Clients: No proc "
                                      & ASU.To_String (S));
                 Spawn_Client (ASU.To_String (S), "nick");
                 -- TODO Send name as Unbounded_String
                 -- TODO get nick and all other flags
             else
-                Iictl.Verbose_Print ("Iictl: Respawn_Clients: Found proc: "
+                Util.Verbose_Print ("Iictl: Respawn_Clients: Found proc: "
                                      & ASU.To_String (S));
                 -- TODO remove
             end if;
@@ -150,12 +151,12 @@ package body Srv_Conn is
     end Is_Srv_Dir;
 
     function Scan_Server_Directory (Irc_Dir : in String)
-        return Iictl.Unbounded_String_Vector
+        return Util.Unbounded_String_Vector
     is
         Search : AD.Search_Type;
         Dir_Ent : AD.Directory_Entry_Type;
         Server_Name : ASU.Unbounded_String;
-        Server_List : Iictl.Unbounded_String_Vector;
+        Server_List : Util.Unbounded_String_Vector;
     begin
         AD.Start_Search (Search, Irc_Dir, "");
         while AD.More_Entries (Search) loop
@@ -165,7 +166,7 @@ package body Srv_Conn is
                 Server_Name := ASU.To_Unbounded_String
                                    (AD.Simple_Name (Dir_Ent));
                 Server_List.Append (Server_Name);
-                Iictl.Verbose_Print ("Iictl: Scan_Server_Directory: found "
+                Util.Verbose_Print ("Iictl: Scan_Server_Directory: found "
                                      & ASU.To_String (Server_Name));
             end if;
         end loop;
@@ -174,10 +175,10 @@ package body Srv_Conn is
         return Server_List;
     end;
 
-    function Scan_Ii_Procs return Iictl.Unbounded_String_Vector is
+    function Scan_Ii_Procs return Util.Unbounded_String_Vector is
         Search : AD.Search_Type;
         Dir_Ent : AD.Directory_Entry_Type;
-        Process_List : Iictl.Unbounded_String_Vector;
+        Process_List : Util.Unbounded_String_Vector;
         Server_Name : ASU.Unbounded_String;
     begin
         AD.Start_Search (Search, "/proc", "");
@@ -185,7 +186,7 @@ package body Srv_Conn is
             AD.Get_Next_Entry (Search, Dir_Ent);
             if Is_Ii_Proc (Dir_Ent) then
                 Server_Name := Get_Server_Name (Dir_Ent);
-                Iictl.Verbose_Print ("Iictl: Scan_Ii_Procs: Found "
+                Util.Verbose_Print ("Iictl: Scan_Ii_Procs: Found "
                                      & ASU.To_String (Server_Name));
                 Process_List.Append (Server_Name);
             end if;
@@ -201,7 +202,7 @@ package body Srv_Conn is
         Cmdline : ASU.Unbounded_String;
         Ret : Boolean := False;
     begin
-        if not Iictl.Is_Integral (Dir_Name) then
+        if not Util.Is_Integral (Dir_Name) then
             return False;
         end if;
 
@@ -220,7 +221,7 @@ package body Srv_Conn is
                 elsif ASU.Element (Cmdline, I - 2) /= 'i' then
                     ret := False;
                 else
-                    Iictl.Verbose_Print ("Iictl: Is_Ii_Proc: found "
+                    Util.Verbose_Print ("Iictl: Is_Ii_Proc: found "
                                           & ASU.To_String (Cmdline));
                     ret := True;
                 end if;
@@ -279,7 +280,7 @@ package body Srv_Conn is
         end if;
 
         ATIO.Close (File);
-        Iictl.Verbose_Print ("Iictl: Get_Server_Name: found name "
+        Util.Verbose_Print ("Iictl: Get_Server_Name: found name "
                              & ASU.To_String (Ret));
         return Ret;
     end;

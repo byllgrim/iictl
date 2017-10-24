@@ -10,6 +10,8 @@ with Posix.Process_Identification;
 with Posix.User_Database;
 with Srv_Conn;
 with Srv_Quit;
+with Util;
+-- TODO check unused withs
 
 package body Iictl is
     package ACL renames Ada.Command_Line;
@@ -18,11 +20,12 @@ package body Iictl is
     package PIO renames Posix.Io;
     package PPI renames Posix.Process_Identification;
     package PUD renames Posix.User_Database;
+    -- TODO remove unused renames
 
-    Verbose : Boolean := False; -- TODO make private or something
     Irc_Dir : ASU.Unbounded_String;
         -- TODO different directories for different servers?
     Nick : ASU.Unbounded_String;
+        -- TODO package globals in .ads?
 
     procedure Iictl is
     begin
@@ -36,9 +39,9 @@ package body Iictl is
             return;
         end if;
 
-        Verbose_Print ("Iictl: started");
-        Verbose_Print ("Nick = " & ASU.To_String (Nick));
-        Verbose_Print ("Irc_Dir = " & ASU.To_String (Irc_Dir));
+        Util.Verbose_Print ("Iictl: started");
+        Util.Verbose_Print ("Nick = " & ASU.To_String (Nick));
+        Util.Verbose_Print ("Irc_Dir = " & ASU.To_String (Irc_Dir));
 
         loop
             Srv_Conn.Reconnect_Servers (ASU.To_String (Irc_Dir),
@@ -52,17 +55,6 @@ package body Iictl is
             Delay 1.0; -- TODO remove? speed up? ravenclaw!
         end loop;
     end Iictl;
-
-    procedure Verbose_Print (Msg : String) is -- TODO rename Debug_Print?
-    begin
-        -- TODO define type for severity?
-
-        if Verbose then
-            -- TODO prepend with "Iictl: "?
-            ATIO.Put_Line (Msg);
-            -- TODO print to stderr?
-        end if;
-    end Verbose_Print;
 
     procedure Parse_Options is
         I : Integer := 1;
@@ -79,8 +71,8 @@ package body Iictl is
                 I := I + 1;
                 Nick := ASU.To_Unbounded_String (ACL.Argument (I));
             elsif ACL.Argument (I) = "-v" then -- TODO use case
-                Verbose := True;
-                Verbose_Print ("Iictl: Verbose printing on");
+                Util.Verbose := True;
+                Util.Verbose_Print ("Iictl: Verbose printing on");
             elsif ACL.Argument (I) = "-i" then
                 I := I + 1;
                 Irc_Dir := ASU.To_Unbounded_String (ACL.Argument (I));
@@ -98,49 +90,9 @@ package body Iictl is
         end loop;
     end Parse_Options;
 
-    function Is_Fifo_Up (Srv_Path : String) Return Boolean is
-        -- TODO rename Is_Fifo_Up as Is_In_Fifo_Up?
-        -- TODO rename Srv_Path as Dir_Path?
-
-        -- TODO take Posix_String?
-        use type Posix.Error_Code;
-
-        In_Path : Posix.Posix_String
-                := Posix.To_Posix_String (Srv_Path & "/in");
-        Fd : PIO.File_Descriptor;
-    begin
-        -- It's up if it's possible to open wronly without error
-
-        -- TODO Is_Pathname ()?
-
-        -- TODO check ps environ TODO relying on FIFO is stupid: Check PIDs
-
-        Fd := PIO.Open (In_Path, PIO.Write_Only, PIO.Non_Blocking);
-
-        -- TODO Close
-        return True;
-    exception
-        when Error : Posix.Posix_Error =>
-            if Posix.Get_Error_Code = Posix.Enxio then
-                return False; -- Fifo is down
-            else
-                raise Posix.Posix_Error with Exception_Message (Error);
-                -- TODO better solution
-            end if;
-            -- TODO NO_SUCH_FILE_OR_DIRECTORY => return False;
-    end Is_Fifo_Up;
-
-    function Is_Integral (Text : String) return Boolean is
-        Dummy : Integer;
-    begin
-        Dummy := Integer'Value (Text);
-        return True;
-    exception
-        when others =>
-            return False;
-    end;
-
     function Default_Irc_Dir return ASU.Unbounded_String is
+        use type Ada.Strings.Unbounded.Unbounded_String;
+
         Uid : PPI.User_Id;
         Db_Item : PUD.User_Database_Item;
         -- TODO Home_Dir : Posix.Posix_String

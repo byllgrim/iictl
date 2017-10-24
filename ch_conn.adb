@@ -1,6 +1,7 @@
 with Ada.Directories;
 with Ada.Text_Io; -- TODO unecessary?
-with Iictl;
+with Iictl; -- TODO unecessary?
+with Util;
 
 package body Ch_Conn is
     package AD renames Ada.Directories;
@@ -33,7 +34,7 @@ package body Ch_Conn is
             return;
         end if;
 
-        Iictl.Verbose_Print ("Iictl: Scan_Server: Scanning " & Srv_Name);
+        Util.Verbose_Print ("Iictl: Scan_Server: Scanning " & Srv_Name);
         AD.Start_Search (Search, Srv_Path, "");
         while AD.More_Entries (Search) loop
             AD.Get_Next_Entry (Search, Ch_Dir);
@@ -48,14 +49,14 @@ package body Ch_Conn is
         Ch_Path : String := AD.Full_Name (Ch_Dir); -- TODO unused?
         Ch_Name : String := AD.Simple_Name (Ch_Dir);
     begin
-        Iictl.Verbose_Print ("Iictl: Maintain_Channel_Connection " & Ch_Path);
+        Util.Verbose_Print ("Iictl: Maintain_Channel_Connection " & Ch_Path);
 
         if Ch_Name(Ch_Name'First) /= '#' then
             -- TODO if not Is_Ch_Dir?
             return;
         end if;
 
-        if not Iictl.Is_Fifo_Up (AD.Full_Name (Ch_Dir)) then
+        if not Util.Is_Fifo_Up (AD.Full_Name (Ch_Dir)) then
             Rejoin_Channel (Srv_Dir, Ch_Dir);
         end if;
     end Maintain_Channel_Connection;
@@ -67,7 +68,7 @@ package body Ch_Conn is
         Ch_Name : String := AD.Simple_Name (Ch_Dir);
         Srv_In : ATIO.File_Type;
     begin
-        Iictl.Verbose_Print ("Iictl: Rejoin_Channel: Rejoining "
+        Util.Verbose_Print ("Iictl: Rejoin_Channel: Rejoining "
                              & AD.Simple_Name (Ch_Dir));
 
         ATIO.Open (Srv_In, ATIO.Out_File, Srv_Path & "/in");
