@@ -62,6 +62,10 @@ package body Iictl is
         Irc_Dir := Default_Irc_Dir;
 
         -- TODO same opts as ii?
+            -- [-i <irc dir>] [-s <host>] [-p <port>]
+            -- [-n <nick>] [-k <password>] [-f <fullname>]
+
+        -- TODO move to Util
 
         -- TODO refactor to separate subprogram TODO move to Main
         -- TODO initialize I more locally
