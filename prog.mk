@@ -8,8 +8,8 @@ OPATH = /usr/lib/i386-linux-gnu/ada/adalib/florist
 all: $(PROG)
 
 $(PROG): $(OBJ)
-	gnatbind $(PROG) -aO$(OPATH)
-	gnatlink $(PROG) -lflorist
+	gnatbind $(PROG) -aO$(OPATH) -static
+	gnatlink $(PROG) -lflorist -static
 
 .adb.o:
 	gnatgcc -c $< -I$(IPATH)
