@@ -13,4 +13,4 @@ install: all
 	chmod 755 ${DESTDIR}${PREFIX}/bin/iictl
 
 clean:
-	rm -f iictl *.ali *.o
+	rm -rf iictl *.ali *.o
