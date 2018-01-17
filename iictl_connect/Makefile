@@ -1,7 +1,20 @@
-all:
-	gnatgcc -c iictl_connect.adb
-	gnatbind iictl_connect
-	gnatlink iictl_connect
+.SUFFIXES:
+.SUFFIXES: .adb .o
+
+PROG = iictl_connect
+SRC = $(PROG).adb
+OBJ = $(SRC:.adb=.o)
+
+all: $(PROG)
+
+$(PROG): $(OBJ)
+	gnatbind $(PROG)
+	gnatlink $(PROG)
+
+.adb.o:
+	gnatgcc -c $<
 
 clean:
-	rm -rf iictl_connect *.o *.ali
+	rm -rf $(PROG) *.o *.ali
+
+.PHONY all clean
