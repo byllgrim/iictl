@@ -1,19 +1,22 @@
 .SUFFIXES:
-.SUFFIXES: .adb .o
+.SUFFIXES: .adb .ads .o
 
-OBJ = $(SRC:.adb=.o)
-IPATH = /usr/share/ada/adainclude/florist
-OPATH = /usr/lib/i386-linux-gnu/ada/adalib/florist
-FLAGS = -Os -Wall -Wextra
+OBJ = $(SRC:=.o)
+INC = -I.. -I/usr/share/ada/adainclude/florist
+LIB = -aO/usr/lib/i386-linux-gnu/ada/adalib/florist
+CFLAGS = -Os -Wall -Wextra
 
 all: $(PROG)
 
 $(PROG): $(OBJ)
-	gnatbind $(PROG) -aO$(OPATH) -static
+	gnatbind $(PROG) $(LIB) -static
 	gnatlink $(PROG) -lflorist -static
 
+.ads.o:
+	gnatgcc -c $< $(INC) $(CFLAGS)
+
 .adb.o:
-	gnatgcc -c $< -I$(IPATH) $(FLAGS)
+	gnatgcc -c $< $(INC) $(CFLAGS)
 
 clean:
 	rm -rf $(PROG) *.o *.ali
