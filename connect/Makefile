@@ -1,3 +1,3 @@
 PROG = iictl_connect
-SRC = $(PROG).adb connections.adb
+SRC = $(PROG) connections ../util
 include ../prog.mk
