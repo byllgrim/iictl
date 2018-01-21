@@ -1,10 +1,13 @@
 .SUFFIXES:
 .SUFFIXES: .adb .ads .o
 
+#PLATFORM = x86_64
+PLATFORM = i386
+
 OBJ = $(SRC:=.o)
 ALI = $(SRC:=.ali)
 INC = -I.. -I/usr/share/ada/adainclude/florist
-LIB = -aO/usr/lib/`arch`-linux-gnu/ada/adalib/florist
+LIB = -aO/usr/lib/${PLATFORM}-linux-gnu/ada/adalib/florist
 CFLAGS = -Os -Wall -Wextra
 
 all: $(PROG)
