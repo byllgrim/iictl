@@ -3,7 +3,7 @@
 
 OBJ = $(SRC:=.o)
 INC = -I.. -I/usr/share/ada/adainclude/florist
-LIB = -aO/usr/lib/i386-linux-gnu/ada/adalib/florist
+LIB = -aO/usr/lib/`arch`-linux-gnu/ada/adalib/florist
 CFLAGS = -Os -Wall -Wextra
 
 all: $(PROG)
